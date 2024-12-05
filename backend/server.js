@@ -23,25 +23,32 @@ const staffAttendanceRouter = require("./routes/staffAttendanceRouter");
 const liveSessionRouter = require("./routes/liveSessionRoutes");
 const testRouter = require("./routes/testRouter");
 const submissionRouter = require("./routes/submissionRouter");
-const dashboardRoutes = require('./routes/adminDashboardRoutes');
+const dashboardRoutes = require("./routes/adminDashboardRoutes");
+const path = require("path");
+
 require("dotenv").config();
 
 const URL = process.env.DB_URL;
 const PORT = process.env.PORT || 3000;
 
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["*", "http://localhost:5173", ""],
+    origin: [
+      "*",
+      "http://localhost:5173",
+      "https://school-management-system-b88z.onrender.com",
+    ],
     credentials: true,
   })
 );
 
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
-app.use('/api/dashboard', dashboardRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/student-marks", studentMarksRouter);
 app.use("/api/student-attendance", studentAttendanceRouter);
 app.use("/api/teacher-attendance", teacherAttendanceRouter);
@@ -58,8 +65,8 @@ app.use("/api/staff-attendance", staffAttendanceRouter);
 app.use("/api/live-sessions", liveSessionRouter);
 app.use("/api/tests", testRouter);
 app.use("/api/submission", submissionRouter);
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
 // Starting the server
 
