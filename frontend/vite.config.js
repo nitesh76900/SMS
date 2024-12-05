@@ -5,6 +5,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: 'frontend/dist', // Ensure this matches the location where your server expects the built files
+    outDir: 'dist', // Ensure this is set to 'dist' in the current directory
   },
 })
