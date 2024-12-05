@@ -40,8 +40,6 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: [
-      "*",
-      "http://localhost:5173",
       "https://sms-1-xqox.onrender.com",
     ],
     credentials: true,
