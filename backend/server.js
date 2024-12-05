@@ -29,6 +29,7 @@ const path = require("path");
 require("dotenv").config();
 
 const URL = process.env.DB_URL;
+console.log('process.env.DB_URL', process.env.DB_URL)
 const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
