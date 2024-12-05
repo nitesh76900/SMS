@@ -1,0 +1,113 @@
+users
+ --> super admin , admin ,teacher ,student, parents 
+ --> connections 
+ --> complaint 
+ --> year calender
+ --> attendance (students & teanchers)
+ --> class 
+ --> time tabel 
+ --> school fee reminder
+ --> notice board & news
+ --> salary management
+ --> student result management (downloadable in tabular format)
+ --> tacking system 
+ --> syllabus management (lesson planning)
+ --> Communication (like discord or WhatsApp community)
+ --> Library management
+ --> practice set (MCQ)
+
+ schemas
+ admin , teachers , student, parents  , connection , notice , class  , student attendance , teacher attendance 
+
+
+super admin {
+    name:
+    phoneNo:
+    joinDate:
+    registrationNumber: Id with 8 cher(include number and char)
+    email:  
+    role: [admin, superAdmin]  
+}
+
+teacher{
+    name:
+    email:
+    joinDate:
+    phoneNo.:
+    registrationNumber: Id with 8 char(include number and char)
+    subject: String
+    assignedClass: array of {objectId, ref="class"}
+    leadClass: {objectId, ref="class"} || null
+    salary:
+    password:
+}
+
+connection{
+    name:
+    email:
+    profession: enum(student, teacher, parents, other)
+    otherProfession: Other profession is required when profession is set to other. 
+    phoneNo.:
+}
+
+parents{
+    name:
+    email:
+    phoneNo:
+    address:
+    registrationNumber: Id with 8 cher(include number and char)
+    student: {objectId, ref="student"}
+    password
+}
+
+//
+
+notice{
+    title:
+    date:
+    subject:
+    description:
+    for: enum(students, teachers, parents, all) => all
+}
+
+class{
+    name:
+    section:
+    subject: array of {subject, teacher: {objectId, ref="teacher"}, }
+    students: array of {objectId, ref="student"}
+    classTeacher: {objectId, ref="teacher"} || null
+}
+marks:[
+    {
+    subject:string,
+    marks:number,
+    class:object id
+}
+]
+
+
+fee reminder feature 
+WhatsApp and email fee reminder to parents
+message and email count 
+add & update fee details 
+due fee section
+
+
+
+studentFee: 
+feesPaid:
+feesDue:
+remindByWhatsapp: count
+remindByEmail: count
+lastPayment: {recipt}
+
+recipt{
+    studentId:
+    parentId:
+    depositFee:
+    dateTime:
+}
+
+
+live session 
+link , teachers , students  , class , title , discription , start from , duration , status 
