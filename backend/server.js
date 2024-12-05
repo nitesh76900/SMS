@@ -42,7 +42,7 @@ app.use(
     origin: [
       "*",
       "http://localhost:5173",
-      "https://school-management-system-b88z.onrender.com",
+      "https://sms-1-xqox.onrender.com",
     ],
     credentials: true,
   })
