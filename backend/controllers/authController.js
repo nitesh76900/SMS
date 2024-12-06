@@ -59,6 +59,11 @@ exports.createAdmin = async (req, res) => {
       return res.status(500).json({ error: "hash password failed" });
     }
 
+    const department = await Department.findOne({ name: "Administration" });
+    if (!department) {
+      console.log("Error: Department not created");
+      return res.status(400).json({ error: "Department not created" });
+    }
 
     const staff = new Staff({
       name,
@@ -66,6 +71,7 @@ exports.createAdmin = async (req, res) => {
       phoneNo,
       joinDate,
       position,
+      department: department._id,
       teacherOrAdmin: "SuperAdmin",
       salary,
       address,
@@ -82,7 +88,9 @@ exports.createAdmin = async (req, res) => {
     });
 
     staff.teacherOrAdminId = newAdmin._id;
+    department.staffMembers.push(staff._id);
 
+    await department.save();
     console.log("Department updated with new staff member.");
     await newAdmin.save();
     console.log("New admin saved successfully.",newAdmin);

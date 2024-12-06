@@ -37,6 +37,12 @@ app.use(express.static(path.join(__dirname, "../frontend/dist")));
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+// app.use(
+//   cors({
+//     origin: ["http://localhost:5173/", "https://sms-1-xqox.onrender.com"],
+//     credentials: true,
+//   })
+// );
 app.use(
   cors({
     origin: ["https://sms-1-xqox.onrender.com"],
@@ -66,7 +72,6 @@ app.use("/api/submission", submissionRouter);
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
-// Starting the server
 
 app.listen(PORT, async () => {
   await connectDB(URL);
