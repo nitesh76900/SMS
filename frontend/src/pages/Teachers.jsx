@@ -34,6 +34,7 @@ const Teachers = () => {
     try {
       setLoading(true);
       const response = await teacherService.getAllTeachers();
+      console.log('response', response)
       
       // Ensure we're working with an array
       const teachersData = Array.isArray(response) ? response : 
@@ -51,17 +52,6 @@ const Teachers = () => {
       showToast(error.message || "Failed to fetch teachers", "error");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleUpdateTeacher = async (id, status) => {
-    try {
-      await teacherService.updateTeacher(id, { status });
-      fetchTeachers();
-      showToast("Teacher status updated successfully", "success");
-    } catch (error) {
-      console.error("Error updating teacher:", error);
-      showToast(error.message || "Failed to update teacher", "error");
     }
   };
 

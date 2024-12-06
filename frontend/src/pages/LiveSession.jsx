@@ -338,7 +338,10 @@ const LiveSessionManagement = () => {
                       {session.duration} min
                     </span>
                     <span className="text-sm text-gray-500">
-                      {session.teacherName || "Unknown Teacher"}
+                      {session.teacher.name || "Unknown Teacher"}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {session.class.name || "Unknown Class"}-{session.class.section || "Unknown Section"}
                     </span>
                   </div>
                 </div>

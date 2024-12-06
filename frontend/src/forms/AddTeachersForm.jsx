@@ -24,6 +24,7 @@ const AddTeachersForm = () => {
   const [errors, setErrors] = useState({});
   const [classesData, setClassesData] = useState([]);
   const [selectedClassSubjects, setSelectedClassSubjects] = useState({});
+  const [loading, setLoading] = useState(false); // Add loading state
 
   useEffect(() => {
     fetchClasses();
@@ -105,6 +106,7 @@ const AddTeachersForm = () => {
     const newErrors = validateForm();
 
     if (Object.keys(newErrors).length === 0) {
+      setLoading(true); // Set loading to true
       try {
         await adminServices.addTeacher(formData);
         showToast("Teacher created successfully", "success");
@@ -112,6 +114,8 @@ const AddTeachersForm = () => {
       } catch (error) {
         showToast(error.message || "Error saving teacher", "error");
         console.error("Error saving teacher:", error);
+      } finally {
+        setLoading(false); // Reset loading
       }
     } else {
       setErrors(newErrors);
@@ -310,7 +314,9 @@ const AddTeachersForm = () => {
                       }}
                       className="form-checkbox h-4 w-4"
                     />
-                    <span>{classItem.name}</span>
+                    <span>
+                      {classItem.name}-{classItem.section}
+                    </span>
 
                     {/* Subjects Dropdown */}
                     {formData.classes.some(
@@ -375,7 +381,7 @@ const AddTeachersForm = () => {
                   const classItem = classesData.find((c) => c._id === classId);
                   return (
                     <option key={classId} value={classId}>
-                      {classItem?.name}
+                      {classItem?.name}-{classItem?.section}
                     </option>
                   );
                 })}
@@ -388,9 +394,14 @@ const AddTeachersForm = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors font-semibold"
+            disabled={loading} // Disable button when loading
+            className={`w-full py-2 px-4 rounded font-semibold ${
+              loading
+                ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+                : "bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+            }`}
           >
-            Register Teacher
+            {loading ? "Registering..." : "Register Teacher"} {/* Change text */}
           </button>
         </form>
       </div>

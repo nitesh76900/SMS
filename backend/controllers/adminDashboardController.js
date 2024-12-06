@@ -14,6 +14,7 @@ const dashboardController = {
     // Previous functions remain the same
     async updateDashboardStats(req, res) {
         try {
+            console.log("update func called")
             const studentStats = await calculateStudentStats();
             const staffStats = await calculateStaffStats();
             const financialStats = await calculateFinancialStats();
@@ -58,13 +59,14 @@ const dashboardController = {
     // Get Dashboard Statistics
     async getDashboardStats(req, res) {
         try {
+           
             console.log("get all states function called")
             const stats = await DashboardStats.findOne()
                 .sort({ createdAt: -1 })
                 .populate('studentStats.classWiseCount.classId')
                 .populate('staffStats.departmentDistribution.departmentId')
                 .populate('financialStats.salaryDistribution.department');
-
+console.log('stats', stats)
             if (!stats) {
                 return res.status(404).json({
                     success: false,
@@ -85,7 +87,6 @@ const dashboardController = {
         }
     }
 };
-
 // Helper function to calculate student statistics
 async function calculateStudentStats() {
     try {

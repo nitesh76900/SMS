@@ -97,10 +97,10 @@ const SuperAdminDashboard = () => {
       .format(amount);
 
   // Prepare chart data
-  const departmentData = dashboardData.staffStats.departmentDistribution.map(dept => ({
-    name: dept.departmentId.name,
-    value: dept.staffCount + dept.teacherCount
-  }));
+  const departmentData = dashboardData?.staffStats?.departmentDistribution.map(dept => ({
+    name: dept?.departmentId?.name || null,
+    value: dept?.staffCount + dept?.teacherCount || null
+  })) ;
 
   const revenueData = dashboardData.financialStats.monthlyRevenue.map(item => ({
     month: new Date(item.month).toLocaleDateString('en-US', { month: 'short' }),
@@ -126,8 +126,8 @@ const SuperAdminDashboard = () => {
   ];
 
   const salaryData = dashboardData.financialStats.salaryDistribution.map(dept => ({
-    name: dept.department.name,
-    salary: dept.totalSalary
+    name: dept?.department?.name || null,
+    salary: dept?.totalSalary || null
   }));
 
   return (
@@ -167,7 +167,7 @@ const SuperAdminDashboard = () => {
           
           <StatsCard 
             title="Total Staff"
-            value={dashboardData.staffStats.totalTeachers + dashboardData.staffStats.totalStaff}
+            value={dashboardData.staffStats.totalStaff}
             icon={GraduationCap}
             subValue={`${dashboardData.staffStats.teacherStudentRatio.toFixed(2)}`}
             subLabel="Teacher-Student Ratio"

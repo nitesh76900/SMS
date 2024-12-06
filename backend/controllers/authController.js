@@ -4,6 +4,116 @@ const Student = require("../models/studentModel");
 const Teachers = require("../models/teacherModels");
 const bcrypt = require("bcryptjs");
 const generateToken = require("../utils/generateToken");
+const Staff = require("../models/staffModels");
+const generateUniqueId = require("../utils/generateId");
+const hashPassword = require("../utils/password");
+const { registrationEmail } = require("../utils/html/html");
+const Connections = require("../models/connectionModels");
+const sendEmail = require("../utils/sendMail");
+
+exports.createAdmin = async (req, res) => {
+  console.log("Received request to add admin:", req.body);
+  try {
+    const {
+      name,
+      phoneNo,
+      joinDate,
+      email,
+      role,
+      position,
+      salary,
+      govId,
+      address,
+    } = req.body;
+
+    // Validation
+    console.log("Validating admin data...");
+    if (
+      !name ||
+      !phoneNo ||
+      !joinDate ||
+      !email ||
+      !position ||
+      !salary ||
+      !govId ||
+      !address
+    ) {
+      console.log("Validation failed: All fields are required.");
+      return res.status(400).json({ error: "All fields are required." });
+    }
+    if (await Staff.findOne({ email })) {
+      console.log("Validation failed: Email already used by staff");
+      return res.status(400).json({ error: "Email already used by staff" });
+    }
+    if (await Staff.findOne({ govId })) {
+      console.log("Validation failed: govId already used by staff");
+      return res.status(400).json({ error: "govId already used by staff" });
+    }
+
+    const uId = `A${await generateUniqueId()}`;
+    console.log("Generated unique ID for admin:", uId);
+
+    const encryptPassword = await hashPassword(uId);
+    if (!encryptPassword) {
+      console.log("Error: hash password failed");
+      return res.status(500).json({ error: "hash password failed" });
+    }
+
+
+    const staff = new Staff({
+      name,
+      email,
+      phoneNo,
+      joinDate,
+      position,
+      teacherOrAdmin: "SuperAdmin",
+      salary,
+      address,
+      govId,
+    });
+
+    console.log("Saving staff data...");
+    const newAdmin = new Admin({
+      name,
+      staffId: staff._id,
+      role: role || "admin",
+      password: encryptPassword,
+      registrationNumber: uId,
+    });
+
+    staff.teacherOrAdminId = newAdmin._id;
+
+    console.log("Department updated with new staff member.");
+    await newAdmin.save();
+    console.log("New admin saved successfully.",newAdmin);
+    await staff.save();
+    console.log("Staff saved successfully.");
+
+  
+    newAdmin.password = "********";
+    const sendRegistrationMail = await sendEmail(
+      staff.email,
+      "Email for Login Id and password",
+      registrationEmail(newAdmin.name, newAdmin.registrationNumber)
+    );
+    if (!sendRegistrationMail) {
+      console.log(
+        "Warning: Admin added successfully, but Email not sent to Admin"
+      );
+      return res.status(400).json({
+        error: "Admin added successfully, but Email not sent to Admin",
+      });
+    }
+
+    console.log("Admin added successfully:", newAdmin);
+    return res
+      .status(201)
+      .json({ message: "Admin added successfully", admin: newAdmin });
+  } catch (error) {
+    console.error("Error in addAdmin:", error);
+    return res.status(400).json({ error: error.message });
+  }
+};
 
 exports.login = async (req, res) => {
     try {
