@@ -46,6 +46,8 @@ import EditStudentForm from "./forms/EditStudentForm";
 import TimeTable from "./pages/TimeTable";
 import AddClassTimeTable from "./forms/AddClassTimeTable";
 import EditClassTimeTable from "./forms/EditClassTimeTable";
+import VehicleDetails from "./pages/TransportManagement/VehicleInfo";
+import VehicleForm from "./pages/TransportManagement/VehicleForm";
 const App = () => {
   return (
     <BrowserRouter>
@@ -166,6 +168,22 @@ const App = () => {
           }
         />
         <Route
+          path="/vehicle/:id"
+          element={
+            <Layout>
+              <VehicleDetails />
+            </Layout>
+          }
+        />
+        <Route
+          path="/edit-vehicle/:id"
+          element={
+            <Layout>
+              <VehicleForm />
+            </Layout>
+          }
+        />
+        <Route
           path="/addteachers"
           element={
             <Layout>
@@ -255,14 +273,6 @@ const App = () => {
             </Layout>
           }
         />
-        {/* <Route
-          path="/transport"
-          element={
-            <Layout>
-              <TransportManagement />
-            </Layout>
-          }
-        /> */}
         <Route
           path="/staff-list/:department"
           element={

@@ -27,7 +27,7 @@ import { useToast } from "../../context/ToastContext";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
-  const [expandedGroup, setExpandedGroup] = useState("Main");
+  const [expandedGroups, setExpandedGroups] = useState([]);
   const location = useLocation();
   const showToast = useToast();
   const navigate = useNavigate();
@@ -48,16 +48,24 @@ const Sidebar = () => {
   };
 
   const MenuGroup = ({ title, children }) => {
-    const isExpanded = expandedGroup === title;
+    const isExpanded = expandedGroups.includes(title);
     const groupRoutes = React.Children.toArray(children).map(
       (child) => child.props.to
     );
     const isActive = isGroupActive(groupRoutes);
 
+    const handleToggle = () => {
+      setExpandedGroups((prevExpanded) =>
+        isExpanded
+          ? prevExpanded.filter((group) => group !== title)
+          : [...prevExpanded, title]
+      );
+    };
+
     return (
       <div className="mb-2">
         <button
-          onClick={() => setExpandedGroup(isExpanded ? "" : title)}
+          onClick={handleToggle}
           className={`w-full px-4 py-2.5 text-left flex items-center justify-between
             hover:bg-gray-800/40 hover:text-gray-200 transition-all duration-300 rounded-xl mx-2
             group relative overflow-hidden

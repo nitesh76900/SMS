@@ -341,7 +341,8 @@ const LiveSessionManagement = () => {
                       {session.teacher.name || "Unknown Teacher"}
                     </span>
                     <span className="text-sm text-gray-500">
-                      {session.class.name || "Unknown Class"}-{session.class.section || "Unknown Section"}
+                      {session.class.name || "Unknown Class"}-
+                      {session.class.section || "Unknown Section"}
                     </span>
                   </div>
                 </div>
@@ -547,7 +548,9 @@ const LiveSessionManagement = () => {
             <div className="mt-6 flex justify-end gap-4">
               <button
                 type="button"
-                // onClick={onClose}
+                onClick={() => {
+                  setShowModal(false);
+                }}
                 className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
               >
                 Cancel

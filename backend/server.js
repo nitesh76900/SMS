@@ -45,7 +45,7 @@ app.use(cookieParser());
 // );
 app.use(
   cors({
-    origin: ["https://sms-1-xqox.onrender.com"],
+    origin: ["http://localhost:5173"],
     credentials: true,
   })
 );
@@ -69,9 +69,9 @@ app.use("/api/staff-attendance", staffAttendanceRouter);
 app.use("/api/live-sessions", liveSessionRouter);
 app.use("/api/tests", testRouter);
 app.use("/api/submission", submissionRouter);
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+// });
 
 app.listen(PORT, async () => {
   await connectDB(URL);

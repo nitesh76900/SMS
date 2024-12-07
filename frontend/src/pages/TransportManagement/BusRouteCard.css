@@ -1,0 +1,246 @@
+/* App.css */
+.app {
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.add-new-btn {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-new-btn:hover {
+  background-color: #218838;
+}
+
+.bus-route-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Form Overlay */
+.form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.edit-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 400px;
+}
+
+.edit-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.edit-form input,
+.edit-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.edit-form textarea {
+  height: 80px;
+  resize: none;
+}
+
+.edit-form-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.edit-form-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.edit-form-buttons button:first-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.edit-form-buttons button:first-child:hover {
+  background-color: #0056b3;
+}
+
+.edit-form-buttons button:last-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+.edit-form-buttons button:last-child:hover {
+  background-color: #c82333;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* BusRouteCard.css */
+.bus-route-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 300px;
+  position: relative;
+  /* overflow:auto; */
+  transition: transform 0.2s;
+
+}
+
+.bus-route-card:hover {
+  transform: scale(1.02);
+}
+
+.route-visual-horizontal {
+  position: relative;
+  height: 50px;
+  margin-bottom: 20px;
+}
+
+.route-line-horizontal {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: #ddd;
+  transform: translateY(-50%);
+  /* z-index: 1; */
+  
+}
+
+.stop-point-horizontal {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  white-space: nowrap;
+  max-width: 100% !important;
+  
+}
+
+.stop-dot {
+  width: 12px;
+  height: 12px;
+  background-color: lightblue;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+.stop-label-horizontal {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #333;  
+ 
+}
+
+.route-info h3 {
+  margin-top: 0;
+  color: #007bff;
+}
+
+.route-info p {
+  margin: 5px 0;
+}
+
+.route-info ul {
+  padding-left: 20px;
+}
+
+.route-info ul li {
+  cursor: pointer;
+  padding: 5px 0;
+}
+
+.route-info ul li:hover {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.card-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.edit-btn,
+.delete-btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background-color: #ffc107;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #e0a800;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
