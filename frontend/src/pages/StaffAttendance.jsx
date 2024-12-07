@@ -61,18 +61,14 @@ const StaffAttendance = () => {
 
   const updateAttendance = async (staffId, newStatus) => {
     try {
-      // console.log("staffId", staffId);
-      const time = new Date().toLocaleString("en-IN", {
-        timeZone: "Asia/Kolkata",
-      });
-      console.log("new Time", time);
+      console.log("staffId", staffId);
+      const time = new Date().toString();
+      console.log("time", time);
       const attendanceData = {
         staffId: staffId,
         date: selectedDate,
         status: newStatus,
-        entryTime: new Date().toLocaleString("en-IN", {
-          timeZone: "Asia/Kolkata",
-        }),
+        entryTime: new Date().toString(),
       };
 
       // Create new attendance record
