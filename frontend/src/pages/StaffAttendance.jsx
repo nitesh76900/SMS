@@ -33,29 +33,19 @@ const StaffAttendance = () => {
       setError(null);
       try {
         // Fetch basic staff data
-        // let date = new Date().toISOString().split("T")[0];
         const staffResponse = await StaffService.getAllStaff();
         setStaff(staffResponse);
 
-        // Fetch attendance data for all staff
-        console.log('selectedDate', selectedDate)
-        const attendanceResponse =
-          await StaffAttendanceService.getAttendance(selectedDate);
-          console.log('attendanceResponse', attendanceResponse)
+        const attendanceResponse = await StaffAttendanceService.getAttendance(
+          selectedDate
+        );
+        console.log("attendanceResponse", attendanceResponse);
         if (!attendanceResponse.success) {
           throw new Error("Failed to fetch attendance");
         }
 
-        // Filter attendance records for selected date
-        // const dateAttendance = attendanceResponse.data.filter(
-        //   (record) =>
-        //     new Date(record.date).toISOString().split("T")[0] === selectedDate
-        // );
-      
-        console.log('selectedDate', selectedDate)
-        // console.log('dateAttendance', dateAttendance)
-        console.log('attendanceResponse', attendanceResponse)
-      
+        console.log("attendanceResponse", attendanceResponse);
+
         setFilteredStaff(attendanceResponse.data);
         setAttendanceData(attendanceResponse.data);
       } catch (error) {
@@ -69,34 +59,20 @@ const StaffAttendance = () => {
     fetchData();
   }, [selectedDate]);
 
-  // Merge staff data with attendance records
-  const getMergedStaffData = (staffData, attendanceData) => {
-    return staffData.map((staffMember) => {
-      const attendanceRecord = attendanceData.find(
-        (record) => record.staff._id === staffMember._id
-      );
-
-      return {
-        id: staffMember._id,
-        name: staffMember.name,
-        email: staffMember.email,
-        department: staffMember.department,
-        designation: staffMember.designation,
-        status: attendanceRecord?.status || "pending",
-        entryTime: attendanceRecord?.entryTime || null,
-        attendanceId: attendanceRecord?._id || null,
-      };
-    });
-  };
-
   const updateAttendance = async (staffId, newStatus) => {
     try {
-      console.log('staffId', staffId)
+      // console.log("staffId", staffId);
+      const time = new Date().toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+      });
+      console.log("new Time", time);
       const attendanceData = {
         staffId: staffId,
         date: selectedDate,
         status: newStatus,
-        entryTime: new Date().getTime(),
+        entryTime: new Date().toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+        }),
       };
 
       // Create new attendance record
@@ -107,7 +83,7 @@ const StaffAttendance = () => {
       if (!response.success) {
         throw new Error(response.message || "Failed to update attendance");
       }
-  console.log('response.data', response.data)
+      console.log("response.data", response.data);
       // Update local attendance data
       setFilteredStaff((prev) =>
         prev.map((record) =>
@@ -305,7 +281,7 @@ const StaffAttendance = () => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Department
                       </th>
-                     
+
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Entry Time
                       </th>
@@ -346,7 +322,7 @@ const StaffAttendance = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-gray-500">
                             {member.staffId.department.name}
                           </td>
-                         
+
                           <td className="px-6 py-4 whitespace-nowrap text-gray-500">
                             {adjustedStatus === "present"
                               ? member.entryTime
@@ -368,7 +344,10 @@ const StaffAttendance = () => {
                                 adjustedStatus === "pending") && (
                                 <button
                                   onClick={() =>
-                                    updateAttendance(member.staffId._id, "present")
+                                    updateAttendance(
+                                      member.staffId._id,
+                                      "present"
+                                    )
                                   }
                                   className={`p-2 rounded-full transition-colors ${
                                     adjustedStatus === "present"
@@ -387,9 +366,12 @@ const StaffAttendance = () => {
                               {(adjustedStatus === "absent" ||
                                 adjustedStatus === "pending") && (
                                 <button
-                                onClick={() =>
-                                  updateAttendance(member.staffId._id, "absent")
-                                }
+                                  onClick={() =>
+                                    updateAttendance(
+                                      member.staffId._id,
+                                      "absent"
+                                    )
+                                  }
                                   className={`p-2 rounded-full transition-colors ${
                                     adjustedStatus === "absent"
                                       ? "bg-red-100 text-red-600"

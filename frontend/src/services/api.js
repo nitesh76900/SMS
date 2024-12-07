@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create an Axios instance with base URL
 const api = axios.create({
-  baseURL:"https://sms-1-xqox.onrender.com/api",
+  baseURL:"http://localhost:3000/api" || "https://sms-1-xqox.onrender.com/api",
   withCredentials: true,
 });
 
