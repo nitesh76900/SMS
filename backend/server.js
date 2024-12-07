@@ -39,13 +39,14 @@ app.use(express.json());
 app.use(cookieParser());
 // app.use(
 //   cors({
-//     origin: ["http://localhost:5173/", "https://sms-1-xqox.onrender.com"],
+//     origin: ["http://localhost:5173", "https://sms-1-xqox.onrender.com"],
 //     credentials: true,
 //   })
 // );
 app.use(
   cors({
     origin: ["https://sms-1-xqox.onrender.com"],
+    // origin: ["http://localhost:5173"],
     credentials: true,
   })
 );
