@@ -1,0 +1,105 @@
+{
+    "vehicles": [
+      {
+        "id": "V001",
+        "registration": "MH12AB1234",
+        "model": "Bus",
+        "capacity": 50,
+        "fuelType": "Diesel",
+        "status": "active",
+        "ownership": "self-owned",
+        "img": "https://via.placeholder.com/150",
+        "yearOfManufacture": "sept 2020",
+        "pollutionVaildUntil": "12 jan 2025",
+        "lastServiceDate": "15 oct 2024",
+        "totalKm": "5000km",
+        "insuranceExpiry": "2024",
+        "maintenanceCost": "500",
+        "fuelCharge": "700",
+        "chassisNumber": "as1234zy6789",
+        "engineNumber": "123456",
+        "color": "yellow",
+        "routeAssigned": "",
+        "driverAssigned": "john doe"
+      },
+      {
+        "id": "V002",
+        "registration": "MH14CD5678",
+        "model": "Bus",
+        "capacity": 15,
+        "fuelType": "Petrol",
+        "status": "inactive",
+        "ownership": "self-owned",
+        "img": null
+      },
+      {
+        "id": "V003",
+        "registration": "MH12AB9876",
+        "model": "Bus",
+        "capacity": 50,
+        "fuelType": "Diesel",
+        "status": "active",
+        "ownership": "self-owned",
+        "img": "https://via.placeholder.com/150",
+        "yearOfManufacture": "sept 2020",
+        "pollutionVaildUntil": "12 jan 2025",
+        "lastServiceDate": "15 oct 2024",
+        "totalKm": "5000km",
+        "insuranceExpiry": "2024",
+        "maintenanceCost": "500",
+        "fuelCharge": "700",
+        "chassisNumber": "as1234zy6789",
+        "engineNumber": "123456",
+        "color": "yellow",
+        "routeAssigned": "",
+        "driverAssigned": ""
+      }
+    ],
+    "routes": [
+      {
+        "busNo": "MH12AB1234",
+        "totalKm": 50,
+        "stops": [{ "name": "Stop 1" }, { "name": "Stop 2" }, { "name": "Stop 3" }]
+      },
+      {
+        "busNo": "MH14CD5678",
+        "totalKm": 30,
+        "stops": [{ "name": "Stop A" }, { "name": "Stop B" }, { "name": "Stop C" }]
+      },
+      {
+        "busNo": "RJ14CD5678",
+        "totalKm": 40,
+        "stops": [{ "name": "Stop X" }, { "name": "Stop Y" }, { "name": "Stop Z" }]
+      }
+    ],
+    "drivers": [
+      {
+        "id": "D001",
+        "name": "John Smith",
+        "license": "DL123456",
+        "phone": "+1-234-567-8900",
+        "experience": 8,
+        "status": "active",
+        "img": null
+      },
+      {
+        "id": "D002",
+        "name": "Sarah Johnson",
+        "license": "DL789012",
+        "phone": "+1-234-567-8901",
+        "experience": 12,
+        "status": "active",
+        "img": "https://via.placeholder.com/150"
+      },
+      {
+        "id": "D003",
+        "name": "john doe",
+        "license": "DL78901245",
+        "phone": "+1-234-567-8901",
+        "experience": 12,
+        "status": "active",
+        "img": "https://via.placeholder.com/150"
+      }
+    ]
+  }
+  

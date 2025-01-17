@@ -1,0 +1,245 @@
+users
+ --> super admin , admin ,teacher ,student, parents 
+ --> connections 
+ --> complaint 
+ --> year calender
+ --> attendance (students & teanchers)
+ --> class 
+ --> time tabel 
+ --> school fee reminder
+ --> notice board & news
+ --> salary management
+ --> student result management (downloadable in tabular format)
+ --> tacking system 
+ --> syllabus management (lesson planning)
+ --> Communication (like discord or WhatsApp community)
+ --> Library management
+ --> practice set (MCQ)
+
+ schemas
+ admin , teachers , student, parents  , connection , notice , class  , student attendance , teacher attendance 
+
+
+super admin {
+    name:
+    phoneNo:
+    joinDate:
+    registrationNumber: Id with 8 cher(include number and char)
+    email:  
+    role: [admin, superAdmin]  
+}
+
+teacher{
+    name:
+    email:
+    joinDate:
+    phoneNo.:
+    registrationNumber: Id with 8 char(include number and char)
+    subject: String
+    assignedClass: array of {objectId, ref="class"}
+    leadClass: {objectId, ref="class"} || null
+    salary:
+    password:
+}
+
+connection{
+    name:
+    email:
+    profession: enum(student, teacher, parents, other)
+    otherProfession: Other profession is required when profession is set to other. 
+    phoneNo.:
+}
+
+parents{
+    name:
+    email:
+    phoneNo:
+    address:
+    registrationNumber: Id with 8 cher(include number and char)
+    student: {objectId, ref="student"}
+    password
+}
+
+//
+
+notice{
+    title:
+    date:
+    subject:
+    description:
+    for: enum(students, teachers, parents, all) => all
+}
+
+class{
+    name:
+    section:
+    subject: array of {subject, teacher: {objectId, ref="teacher"}, }
+    students: array of {objectId, ref="student"}
+    classTeacher: {objectId, ref="teacher"} || null
+}
+marks:[
+    {
+    subject:string,
+    marks:number,
+    class:object id
+}
+]
+
+
+fee reminder feature 
+WhatsApp and email fee reminder to parents
+message and email count 
+add & update fee details 
+due fee section
+
+
+
+studentFee: 
+feesPaid:
+feesDue:
+remindByWhatsapp: count
+remindByEmail: count
+lastPayment: {recipt}
+
+recipt{
+    studentId:
+    parentId:
+    depositFee:
+    dateTime:
+}
+
+
+live session 
+link , teachers , students  , class , title , discription , start from , duration , status 
+
+
+
+
+
+
+
+
+
+
+
+
+{
+  "questions": [
+    {
+      "questionText": "What is the capital of France?",
+      "questionType": "SINGLE_CHOICE",
+      "options": [
+        { "text": "Paris", "isCorrect": true },
+        { "text": "London", "isCorrect": false },
+        { "text": "Berlin", "isCorrect": false },
+        { "text": "Madrid", "isCorrect": false }
+      ],
+      "marks": 5,
+      "explanation": "The capital of France is Paris.",
+      "difficultyLevel": "EASY"
+    },
+    {
+      "questionText": "Which programming languages are object-oriented?",
+      "questionType": "MULTIPLE_CHOICE",
+      "options": [
+        { "text": "Java", "isCorrect": true },
+        { "text": "C++", "isCorrect": true },
+        { "text": "Python", "isCorrect": true },
+        { "text": "HTML", "isCorrect": false }
+      ],
+      "marks": 10,
+      "explanation": "Java, C++, and Python are object-oriented languages.",
+      "difficultyLevel": "MEDIUM"
+    },
+    {
+      "questionText": "The Earth is flat.",
+      "questionType": "TRUE_FALSE",
+      "options": [
+        { "text": "True", "isCorrect": false },
+        { "text": "False", "isCorrect": true }
+      ],
+      "marks": 2,
+      "explanation": "The Earth is a sphere.",
+      "difficultyLevel": "EASY"
+    },
+    {
+      "questionText": "Solve the equation: 2x + 5 = 15.",
+      "questionType": "SHORT_ANSWER", 
+      "options": [],
+      "marks": 5,
+      "explanation": "The solution is x = 5.",
+      "difficultyLevel": "MEDIUM"
+    },
+    {
+      "questionText": "What is the largest mammal on Earth?",
+      "questionType": "SINGLE_CHOICE",
+      "options": [
+        { "text": "Elephant", "isCorrect": false },
+        { "text": "Blue Whale", "isCorrect": true },
+        { "text": "Giraffe", "isCorrect": false },
+        { "text": "Shark", "isCorrect": false }
+      ],
+      "marks": 5,
+      "explanation": "The Blue Whale is the largest mammal.",
+      "difficultyLevel": "MEDIUM"
+    },
+    {
+      "questionText": "Identify the primary colors.",
+      "questionType": "MULTIPLE_CHOICE",
+      "options": [
+        { "text": "Red", "isCorrect": true },
+        { "text": "Green", "isCorrect": false },
+        { "text": "Blue", "isCorrect": true },
+        { "text": "Yellow", "isCorrect": true }
+      ],
+      "marks": 8,
+      "explanation": "The primary colors are Red, Blue, and Yellow.",
+      "difficultyLevel": "EASY"
+    },
+    {
+      "questionText": "The sum of angles in a triangle is always 180 degrees.",
+      "questionType": "TRUE_FALSE",
+      "options": [
+        { "text": "True", "isCorrect": true },
+        { "text": "False", "isCorrect": false }
+      ],
+      "marks": 3,
+      "explanation": "This is a fundamental property of triangles.",
+      "difficultyLevel": "EASY"
+    },
+    {
+      "questionText": "Write the chemical formula for water.",
+      "questionType": "SHORT_ANSWER",
+      "options": [],
+      "marks": 5,
+      "explanation": "The chemical formula for water is H2O.",
+      "difficultyLevel": "EASY"
+    },
+    {
+      "questionText": "Which of the following are renewable energy sources?",
+      "questionType": "MULTIPLE_CHOICE",
+      "options": [
+        { "text": "Solar", "isCorrect": true },
+        { "text": "Wind", "isCorrect": true },
+        { "text": "Coal", "isCorrect": false },
+        { "text": "Natural Gas", "isCorrect": false }
+      ],
+      "marks": 10,
+      "explanation": "Solar and Wind are renewable energy sources.",
+      "difficultyLevel": "MEDIUM"
+    },
+    {
+      "questionText": "Which planet is known as the Red Planet?",
+      "questionType": "SINGLE_CHOICE",
+      "options": [
+        { "text": "Mars", "isCorrect": true },
+        { "text": "Venus", "isCorrect": false },
+        { "text": "Earth", "isCorrect": false },
+        { "text": "Jupiter", "isCorrect": false }
+      ],
+      "marks": 4,
+      "explanation": "Mars is known as the Red Planet due to its reddish appearance.",
+      "difficultyLevel": "EASY"
+    }
+  ]
+}
