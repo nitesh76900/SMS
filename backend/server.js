@@ -39,7 +39,7 @@ const URL = process.env.DB_URL;
 console.log("process.env.DB_URL", process.env.DB_URL);
 const PORT = process.env.PORT || 3000;
 
-// app.use(express.static(path.join(__dirname, "../frontend/dist")));
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
@@ -82,9 +82,9 @@ app.use("/api/vehicle", vehicleRoutes);
 app.use("/api/vehicle-route", routeRoutes);
 app.use("/api/vehicle-history", vehicleHistoryRoutes);
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-// });
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
 
 app.listen(PORT, async () => {
   await connectDB(URL);
