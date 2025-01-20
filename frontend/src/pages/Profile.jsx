@@ -29,19 +29,19 @@ const Profile = () => {
   const [error, setError] = useState("");
   const [user, setUser] = useState({});
 
-  async function fetchProfile() {
-    try {
-      const userData = await ProfileService.getProfile();
-      console.log("userData:", userData);
-      // setUser(userData)
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  }
+  // async function fetchProfile() {
+  //   try {
+  //     const userData = await ProfileService.getProfile();
+  //     console.log("userData:", userData);
+  //     // setUser(userData)
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw error;
+  //   }
+  // }
   // Simulating loading state
   useEffect(() => {
-    fetchProfile();
+    // fetchProfile();
     setLoading(false); // Set loading to false after dummy data is "loaded"
   }, []);
 
