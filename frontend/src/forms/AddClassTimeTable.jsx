@@ -123,15 +123,15 @@ const AddClassTimeTable = ({ onTimeTableAdded }) => {
 
   const handleSubjectSelection = (periodIndex, subject) => {
     console.log("subject", subject);
-    if (!subject.teacher) {
-      showToast("No teacher available for this subject", "warning");
-    }
+    // if (!subject.teacher) {
+    //   showToast("No teacher available for this subject", "warning");
+    // }
     const newPeriods = [...newTimeTable.periods];
     newPeriods[periodIndex] = {
       ...newPeriods[periodIndex],
       subject: subject.subjectName,
       subjectId: subject._id,
-      teacher: subject.teacher._id,
+      teacher: subject.teacher?._id,
     };
 
     setNewTimeTable((prev) => ({

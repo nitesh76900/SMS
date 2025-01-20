@@ -50,14 +50,8 @@ const EditClassTimeTable = () => {
 
   const [classes, setClasses] = useState([]);
   const [classSubjects, setClassSubjects] = useState([]);
+  const [freeTeachers, setFreeTeachers] = useState([]);
 
-  // Convert 12-hour time to 24-hour time
-  const convertTo24HourFormat = (time12h) => {
-    if (!time12h) return "";
-    return dayjs(time12h, "hh:mm A").format("HH:mm");
-  };
-
-  // Fetch existing timetable data and classes on component mount
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -69,22 +63,32 @@ const EditClassTimeTable = () => {
         // Fetch existing timetable details
         const timetableResponse = await TimeTableService.getTimetableById(id);
 
-        // Prepare the timetable for editing
+        console.log("timetableResponse", timetableResponse);
+
+        // Update the state with the fetched data
         setEditTimeTable({
           classId: timetableResponse.class._id,
           day: timetableResponse.day,
-          periods: timetableResponse.periods.map((period) => ({
-            periodNumber: period.periodNumber,
-            subject: period.subject,
-            subjectId: period.subject,
-            teacher: period.teacher._id,
-            startTime: convertTo24HourFormat(period.startTime),
-            endTime: convertTo24HourFormat(period.endTime),
-          })),
+          periods: timetableResponse.periods.map((period) => {
+            const matchedSubject = classSubjects.find(
+              (subject) => subject.subjectName === period.subject
+            );
+            return {
+              periodNumber: period.periodNumber,
+              subject: period.subject,
+              subjectId: matchedSubject?._id || "", // Use matched subject ID
+              teacher: period.teacher.name,
+              teacherId: period.teacher._id,
+              startTime: period.startTime,
+              endTime: period.endTime,
+              _id: period._id,
+            };
+          }),
         });
 
         // Fetch class details to get subjects
         const classData = await getClassById(timetableResponse.class._id);
+        // console.log("classData.data.subjects", classData.data.subjects);
         setClassSubjects(classData.data.subjects || []);
       } catch (error) {
         showToast(`Error fetching timetable: ${error.message}`, "error");
@@ -101,13 +105,9 @@ const EditClassTimeTable = () => {
       if (!classId) return;
 
       setIsLoadingClass(true);
-      // Fetch full class details
       const classData = await getClassById(classId);
-
-      // Set subjects for the selected class
       setClassSubjects(classData.data.subjects || []);
 
-      // Reset and update timetable
       setEditTimeTable((prev) => ({
         ...prev,
         classId: classId,
@@ -137,7 +137,40 @@ const EditClassTimeTable = () => {
       ...newPeriods[periodIndex],
       subject: subject.subjectName,
       subjectId: subject._id,
-      teacher: subject.teacher?._id || "",
+      teacher: subject.teacher?.name || "",
+      teacherId: subject.teacher?._id || "",
+    };
+
+    setEditTimeTable((prev) => ({
+      ...prev,
+      periods: newPeriods,
+    }));
+
+    // Fetch free teachers if day is selected
+    if (editTimeTable.day) {
+      fetchFreeTeachers(periodIndex, editTimeTable.day, periodIndex + 1);
+    }
+  };
+
+  const handleTimeChange = (periodIndex, field, newValue) => {
+    const formattedTime = newValue ? newValue.format("hh:mm A") : "";
+    const newPeriods = [...editTimeTable.periods];
+    newPeriods[periodIndex] = {
+      ...newPeriods[periodIndex],
+      [field]: formattedTime,
+    };
+    setEditTimeTable((prev) => ({
+      ...prev,
+      periods: newPeriods,
+    }));
+  };
+
+  const handleTeacherSelection = (periodIndex, teacherId, teacherName) => {
+    const newPeriods = [...editTimeTable.periods];
+    newPeriods[periodIndex] = {
+      ...newPeriods[periodIndex],
+      teacher: teacherName,
+      teacherId: teacherId,
     };
 
     setEditTimeTable((prev) => ({
@@ -146,29 +179,7 @@ const EditClassTimeTable = () => {
     }));
   };
 
-  const addPeriod = () => {
-    if (editTimeTable.periods.length < 8) {
-      setEditTimeTable((prev) => ({
-        ...prev,
-        periods: [
-          ...prev.periods,
-          {
-            periodNumber: prev.periods.length + 1,
-            subject: "",
-            subjectId: "",
-            teacher: "",
-            startTime: "",
-            endTime: "",
-          },
-        ],
-      }));
-    } else {
-      showToast("Maximum 8 periods allowed", "warning");
-    }
-  };
-
   const handleUpdateTimeTable = async () => {
-    // Validation checks
     if (!editTimeTable.classId) {
       showToast("Please select a class", "error");
       return;
@@ -179,7 +190,7 @@ const EditClassTimeTable = () => {
     }
     if (
       editTimeTable.periods.some(
-        (p) => !p.subjectId || !p.startTime || !p.endTime
+        (p) => !p.subject || !p.startTime || !p.endTime
       )
     ) {
       showToast("Please fill in all period details", "error");
@@ -187,21 +198,20 @@ const EditClassTimeTable = () => {
     }
 
     try {
-      setIsSubmitting(true);
-      // Prepare the payload
+      setIsSubmitting(true);  
       const payload = {
         class: editTimeTable.classId,
         day: editTimeTable.day,
         periods: editTimeTable.periods.map((period) => ({
           periodNumber: period.periodNumber,
           subject: period.subject,
-          teacher: period.teacher,
+          teacher: period.teacherId,
           startTime: period.startTime,
           endTime: period.endTime,
+          _id: period._id,
         })),
       };
 
-      // Update the timetable
       await TimeTableService.updateTimeTable(id, payload);
       showToast("Timetable updated successfully", "success");
       navigate(-1);
@@ -209,6 +219,37 @@ const EditClassTimeTable = () => {
       showToast(`Error: ${error.message}`, "error");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const fetchFreeTeachers = async (periodIndex, day, periodNumber) => {
+    try {
+      const response = await TimeTableService.getFindFreeTeacher(
+        day,
+        periodNumber
+      );
+
+      // Filter free teachers based on subject department if needed
+      const currentSubject = editTimeTable.periods[periodIndex];
+      const filteredTeachers = response.freeTeachers.filter(
+        (teacher) => teacher.department === currentSubject?.subject?.department
+      );
+
+      // Add the current teacher to the list if not already present
+      const currentTeacher = editTimeTable.periods[periodIndex].teacherId;
+      if (
+        currentTeacher &&
+        !filteredTeachers.find((t) => t._id === currentTeacher)
+      ) {
+        filteredTeachers.unshift({
+          _id: currentTeacher,
+          name: editTimeTable.periods[periodIndex].teacher,
+        });
+      }
+
+      setFreeTeachers(filteredTeachers || []);
+    } catch (error) {
+      showToast("Error fetching free teachers", "error");
     }
   };
 
@@ -228,7 +269,6 @@ const EditClassTimeTable = () => {
         </Typography>
 
         <Grid container spacing={3}>
-          {/* Class and Day Selection Section */}
           <Grid item xs={12} md={6}>
             <Box sx={{ mb: 2 }}>
               <Typography
@@ -239,15 +279,9 @@ const EditClassTimeTable = () => {
               </Typography>
               <Select
                 fullWidth
-                value={editTimeTable.classId || ""}
+                value={editTimeTable.classId}
                 onChange={(e) => handleClassSelection(e.target.value)}
                 disabled={isLoadingClass}
-                sx={{
-                  backgroundColor: "background.paper",
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(0, 0, 0, 0.12)",
-                  },
-                }}
               >
                 {classes.map((cls) => (
                   <MenuItem key={cls._id} value={cls._id}>
@@ -268,20 +302,11 @@ const EditClassTimeTable = () => {
               </Typography>
               <Select
                 fullWidth
-                value={editTimeTable.day || ""}
+                value={editTimeTable.day}
                 onChange={(e) =>
-                  setEditTimeTable((prev) => ({
-                    ...prev,
-                    day: e.target.value,
-                  }))
+                  setEditTimeTable((prev) => ({ ...prev, day: e.target.value }))
                 }
                 disabled={isLoadingClass}
-                sx={{
-                  backgroundColor: "background.paper",
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(0, 0, 0, 0.12)",
-                  },
-                }}
               >
                 {[
                   "Monday",
@@ -299,16 +324,6 @@ const EditClassTimeTable = () => {
             </Box>
           </Grid>
 
-          {/* Loading indicator for class selection */}
-          {isLoadingClass && (
-            <Grid item xs={12}>
-              <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-                <CircularProgress size={24} />
-              </Box>
-            </Grid>
-          )}
-
-          {/* Periods Section */}
           <Grid item xs={12}>
             <Divider sx={{ my: 3 }} />
             <Typography variant="h5" sx={{ mb: 3, fontWeight: "medium" }}>
@@ -327,11 +342,11 @@ const EditClassTimeTable = () => {
                 }}
               >
                 <Typography variant="h6" sx={{ mb: 2, color: "primary.main" }}>
-                  Period {index + 1}
+                  Period {period.periodNumber}
                 </Typography>
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={6}>
-                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    <Typography variant="subtitle2" gutterBottom>
                       Subject
                     </Typography>
                     <Select
@@ -343,8 +358,7 @@ const EditClassTimeTable = () => {
                         );
                         handleSubjectSelection(index, selectedSubject);
                       }}
-                      disabled={isLoadingClass}
-                      sx={{ backgroundColor: "background.paper" }}
+                      disabled={!editTimeTable.day}
                     >
                       {classSubjects.map((subject) => (
                         <MenuItem key={subject._id} value={subject._id}>
@@ -355,15 +369,40 @@ const EditClassTimeTable = () => {
                   </Grid>
 
                   <Grid item xs={12} md={6}>
-                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    <Typography variant="subtitle2" gutterBottom>
                       Teacher
                     </Typography>
-                    <TextField
+                    <Select
                       fullWidth
-                      value={period.teacher}
-                      disabled
-                      sx={{ backgroundColor: "background.paper" }}
-                    />
+                      value={period.teacherId || ""}
+                      onChange={(e) => {
+                        const selectedTeacher = freeTeachers.find(
+                          (t) => t._id === e.target.value
+                        );
+                        handleTeacherSelection(
+                          index,
+                          e.target.value,
+                          selectedTeacher?.name
+                        );
+                      }}
+                      disabled={!editTimeTable.day || !period.subject}
+                    >
+                      {period.teacherId &&
+                        period.teacher &&
+                        !freeTeachers.find(
+                          (t) => t._id === period.teacherId
+                        ) && (
+                          <MenuItem value={period.teacherId}>
+                            {period.teacher} (Current)
+                          </MenuItem>
+                        )}
+                      {freeTeachers.map((teacher) => (
+                        <MenuItem key={teacher._id} value={teacher._id}>
+                          {teacher.name}{" "}
+                          {teacher.subject ? `(${teacher.subject})` : ""}
+                        </MenuItem>
+                      ))}
+                    </Select>
                   </Grid>
 
                   <Grid item xs={12} md={6}>
@@ -375,20 +414,9 @@ const EditClassTimeTable = () => {
                             ? dayjs(`2024-01-01 ${period.startTime}`)
                             : null
                         }
-                        onChange={(newValue) => {
-                          const formattedTime = newValue
-                            ? newValue.format("hh:mm A")
-                            : "";
-                          const newPeriods = [...editTimeTable.periods];
-                          newPeriods[index] = {
-                            ...newPeriods[index],
-                            startTime: formattedTime,
-                          };
-                          setEditTimeTable((prev) => ({
-                            ...prev,
-                            periods: newPeriods,
-                          }));
-                        }}
+                        onChange={(newValue) =>
+                          handleTimeChange(index, "startTime", newValue)
+                        }
                         disabled={isLoadingClass}
                         sx={{ width: "100%" }}
                       />
@@ -404,20 +432,9 @@ const EditClassTimeTable = () => {
                             ? dayjs(`2024-01-01 ${period.endTime}`)
                             : null
                         }
-                        onChange={(newValue) => {
-                          const formattedTime = newValue
-                            ? newValue.format("hh:mm A")
-                            : "";
-                          const newPeriods = [...editTimeTable.periods];
-                          newPeriods[index] = {
-                            ...newPeriods[index],
-                            endTime: formattedTime,
-                          };
-                          setEditTimeTable((prev) => ({
-                            ...prev,
-                            periods: newPeriods,
-                          }));
-                        }}
+                        onChange={(newValue) =>
+                          handleTimeChange(index, "endTime", newValue)
+                        }
                         disabled={isLoadingClass}
                         sx={{ width: "100%" }}
                       />
@@ -428,22 +445,32 @@ const EditClassTimeTable = () => {
             ))}
           </Grid>
 
-          {/* Action Buttons */}
           <Grid item xs={12}>
             <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
               <Button
                 variant="outlined"
                 color="secondary"
                 startIcon={<AddIcon />}
-                onClick={addPeriod}
-                disabled={
-                  !editTimeTable.classId || isLoadingClass || isSubmitting
-                }
-                sx={{
-                  borderRadius: 2,
-                  textTransform: "none",
-                  px: 3,
+                onClick={() => {
+                  const newPeriod = {
+                    periodNumber: editTimeTable.periods.length + 1,
+                    subject: "",
+                    subjectId: "",
+                    teacher: "",
+                    startTime: "",
+                    endTime: "",
+                  };
+                  setEditTimeTable((prev) => ({
+                    ...prev,
+                    periods: [...prev.periods, newPeriod],
+                  }));
                 }}
+                disabled={
+                  editTimeTable.periods.length >= 8 ||
+                  !editTimeTable.classId ||
+                  isLoadingClass ||
+                  isSubmitting
+                }
               >
                 Add Period
               </Button>
@@ -457,11 +484,6 @@ const EditClassTimeTable = () => {
                 startIcon={
                   isSubmitting && <CircularProgress size={20} color="inherit" />
                 }
-                sx={{
-                  borderRadius: 2,
-                  textTransform: "none",
-                  px: 4,
-                }}
               >
                 {isSubmitting ? "Updating..." : "Update Timetable"}
               </Button>
@@ -470,7 +492,6 @@ const EditClassTimeTable = () => {
         </Grid>
       </Paper>
 
-      {/* Backdrop loading for submission */}
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isSubmitting}

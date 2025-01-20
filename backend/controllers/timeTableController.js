@@ -69,7 +69,7 @@ exports.getTimetableById = async (req, res) => {
     console.log("req.params", req.params);
     const { id } = req.params;
     const timetable = await TimeTable.findById(id)
-      .populate("class", "name") // Adjust as per your `Class` schema
+      .populate("class", "name section") // Adjust as per your `Class` schema
       .populate("periods.teacher", "name"); // Adjust as per your `Teacher` schema
 
     console.log("timetable", timetable);
@@ -191,10 +191,11 @@ exports.getTodayTimeTable = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+
 exports.findFreeTeacher = async (req, res) => {
   try {
-    console.log('req.body in find free teachers', req.body)
-    const { day, periodNumber,classId="" } = req.body;
+    console.log("req.body in find free teachers", req.body);
+    const { day, periodNumber, classId = "" } = req.body;
 
     // Validate input
     if (!day || !periodNumber) {
@@ -208,25 +209,25 @@ exports.findFreeTeacher = async (req, res) => {
       day,
       periods: {
         $elemMatch: {
-          periodNumber: periodNumber
-        }
-      }
-    }).select('periods');
+          periodNumber: periodNumber,
+        },
+      },
+    }).select("periods");
 
     // Extract teacher IDs who are assigned during this specific period
     const assignedTeacherIds = new Set(
-      assignedTeachers.flatMap(timetable =>
+      assignedTeachers.flatMap((timetable) =>
         timetable.periods
-          .filter(period => period.periodNumber === periodNumber)
-          .map(period => period.teacher.toString())
+          .filter((period) => period.periodNumber === periodNumber)
+          .map((period) => period.teacher.toString())
       )
     );
 
     // Find teachers who are not assigned during this period
     const freeTeachers = await Teacher.find({
-      _id: { $nin: Array.from(assignedTeacherIds) }
+      _id: { $nin: Array.from(assignedTeacherIds) },
     }).select("name subject");
-  console.log('freeTeachers', freeTeachers)
+    console.log("freeTeachers", freeTeachers);
     return res.status(200).json({
       message: "Free teachers retrieved successfully.",
       freeTeachers,

@@ -43,12 +43,6 @@ app.use(express.static(path.join(__dirname, "../frontend/dist")));
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
-// app.use(
-//   cors({
-//     origin: ["http://localhost:5173", "https://sms-1-xqox.onrender.com"],
-//     credentials: true,
-//   })
-// );
 app.use(
   cors({
     origin: ["https://sms-hp9f.onrender.com", "http://localhost:5173"],

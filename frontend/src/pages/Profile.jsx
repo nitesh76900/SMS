@@ -1,28 +1,47 @@
-import { useState, useEffect } from 'react';
-import { TextField, Button, Typography, Grid, Paper, Avatar } from '@mui/material';
+import { useState, useEffect } from "react";
+import {
+  TextField,
+  Button,
+  Typography,
+  Grid,
+  Paper,
+  Avatar,
+} from "@mui/material";
 import { useToast } from "../context/ToastContext";
-
+import ProfileService from "../services/profileService";
 
 const Profile = () => {
   const showToast = useToast();
 
   // Dummy profile data (replace with actual API calls)
   const dummyProfile = {
-    name: 'John Doe',
-    email: 'johndoe@example.com',
-    role: 'Admin',
-    phone: '123-456-7890',
-    address: '123 Main St, Springfield, IL',
+    name: "John Doe",
+    email: "johndoe@example.com",
+    role: "Admin",
+    phone: "123-456-7890",
+    address: "123 Main St, Springfield, IL",
   };
 
   const [profileData, setProfileData] = useState(dummyProfile);
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [newData, setNewData] = useState(dummyProfile);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [user, setUser] = useState({});
 
+  async function fetchProfile() {
+    try {
+      const userData = await ProfileService.getProfile();
+      console.log("userData:", userData);
+      // setUser(userData)
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
   // Simulating loading state
   useEffect(() => {
+    fetchProfile();
     setLoading(false); // Set loading to false after dummy data is "loaded"
   }, []);
 
@@ -45,11 +64,11 @@ const Profile = () => {
       // In a real scenario, you would call an API to save changes here
       setProfileData(newData);
       setEditing(false);
-      setError('');
+      setError("");
       showToast("Profile updated successfully", "success");
     } catch (error) {
       showToast("Failed to update profile", "error");
-      setError('Failed to update profile');
+      setError("Failed to update profile");
     }
   };
 
@@ -62,7 +81,6 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center py-10">
       <Paper className="w-full max-w-md p-5 shadow-lg bg-white rounded-lg">
-
         {loading ? (
           <Typography variant="h6" align="center">
             Loading...
@@ -75,7 +93,7 @@ const Profile = () => {
               </Typography>
             )}
             <Typography variant="h5" align="center" gutterBottom>
-                Profile
+              Profile
             </Typography>
 
             <Grid container spacing={2}>
@@ -141,13 +159,21 @@ const Profile = () => {
                 >
                   Save Changes
                 </Button>
-                <Button variant="outlined" color="secondary" onClick={handleCancelEdit}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={handleCancelEdit}
+                >
                   Cancel
                 </Button>
               </div>
             ) : (
               <div className="flex justify-end mt-4">
-                <Button variant="contained" color="primary" onClick={handleEditToggle}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleEditToggle}
+                >
                   Edit Profile
                 </Button>
               </div>
