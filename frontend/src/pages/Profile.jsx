@@ -1,187 +1,211 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
-  TextField,
-  Button,
+  Alert,
+  Card,
+  CardContent,
   Typography,
   Grid,
-  Paper,
-  Avatar,
+  CircularProgress,
+  Box,
 } from "@mui/material";
-import { useToast } from "../context/ToastContext";
 import ProfileService from "../services/profileService";
 
 const Profile = () => {
-  const showToast = useToast();
-
-  // Dummy profile data (replace with actual API calls)
-  const dummyProfile = {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    role: "Admin",
-    phone: "123-456-7890",
-    address: "123 Main St, Springfield, IL",
-  };
-
-  const [profileData, setProfileData] = useState(dummyProfile);
-  const [loading, setLoading] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [newData, setNewData] = useState(dummyProfile);
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [user, setUser] = useState({});
 
-  // async function fetchProfile() {
-  //   try {
-  //     const userData = await ProfileService.getProfile();
-  //     console.log("userData:", userData);
-  //     // setUser(userData)
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw error;
-  //   }
-  // }
-  // Simulating loading state
   useEffect(() => {
-    // fetchProfile();
-    setLoading(false); // Set loading to false after dummy data is "loaded"
+    fetchProfile();
   }, []);
 
-  const handleEditToggle = () => {
-    setEditing((prev) => !prev);
-    if (!editing) {
-      showToast("Editing profile", "info");
-    }
-  };
-
-  const handleInputChange = (e) => {
-    setNewData({
-      ...newData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSaveChanges = () => {
+  const fetchProfile = async () => {
     try {
-      // In a real scenario, you would call an API to save changes here
-      setProfileData(newData);
-      setEditing(false);
-      setError("");
-      showToast("Profile updated successfully", "success");
-    } catch (error) {
-      showToast("Failed to update profile", "error");
-      setError("Failed to update profile");
+      const response = await ProfileService.getProfile();
+      console.log("response", response.user);
+      if (response.user) {
+        setProfileData(response.user);
+      }
+    } catch (err) {
+      setError("Failed to fetch profile data");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleCancelEdit = () => {
-    setNewData(profileData);
-    setEditing(false);
-    showToast("Edit cancelled", "info");
-  };
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // Early return if no profile data
+  if (!profileData) {
+    return (
+      <Box minHeight="100vh" bgcolor="#f5f5f5" p={2}>
+        <Card sx={{ maxWidth: 800, margin: "0 auto" }}>
+          <CardContent>
+            <Alert severity="error">No profile data available</Alert>
+          </CardContent>
+        </Card>
+      </Box>
+    );
+  }
+
+  // Determine if user is staff/admin or student
+  const isStaff = !!profileData.staffId;
+  const displayData = isStaff ? profileData.staffId : profileData;
+
+  const InfoField = ({ label, value }) => (
+    <Box mb={2}>
+      <Typography variant="subtitle2" color="textSecondary">
+        {label}
+      </Typography>
+      <Typography variant="body2">{value || "N/A"}</Typography>
+    </Box>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-center py-10">
-      <Paper className="w-full max-w-md p-5 shadow-lg bg-white rounded-lg">
-        {loading ? (
-          <Typography variant="h6" align="center">
-            Loading...
+    <Box
+      minHeight="100vh"
+      bgcolor="#f5f5f5"
+      p={2}
+      sx={{ py: { sm: 3, lg: 4 } }}
+    >
+      <Card sx={{ maxWidth: 800, margin: "0 auto" }}>
+        <CardContent>
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{ fontWeight: "bold", mb: 3 }}
+          >
+            Profile Details
           </Typography>
-        ) : (
-          <div>
-            {error && (
-              <Typography variant="body2" color="error" align="center">
-                {error}
-              </Typography>
-            )}
-            <Typography variant="h5" align="center" gutterBottom>
-              Profile
-            </Typography>
 
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Name"
-                  name="name"
-                  value={editing ? newData.name : profileData.name}
-                  onChange={handleInputChange}
-                  disabled={!editing}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  name="email"
-                  value={editing ? newData.email : profileData.email}
-                  onChange={handleInputChange}
-                  disabled={!editing}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Phone"
-                  name="phone"
-                  value={editing ? newData.phone : profileData.phone}
-                  onChange={handleInputChange}
-                  disabled={!editing}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Address"
-                  name="address"
-                  value={editing ? newData.address : profileData.address}
-                  onChange={handleInputChange}
-                  disabled={!editing}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Role"
-                  name="role"
-                  value={editing ? newData.role : profileData.role}
-                  onChange={handleInputChange}
-                  disabled={!editing}
-                />
-              </Grid>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Grid container spacing={3}>
+            {/* Common Fields */}
+            <Grid item xs={12} sm={6}>
+              <InfoField label="Name" value={displayData.name} />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InfoField label="Email" value={displayData.email} />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InfoField label="Phone Number" value={displayData.phoneNo} />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InfoField label="Address" value={displayData.address} />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InfoField
+                label="Registration Number"
+                value={profileData.registrationNumber}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InfoField label="Role" value={profileData.role} />
             </Grid>
 
-            {editing ? (
-              <div className="flex justify-end mt-4">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSaveChanges}
-                  className="mr-2"
-                >
-                  Save Changes
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={handleCancelEdit}
-                >
-                  Cancel
-                </Button>
-              </div>
-            ) : (
-              <div className="flex justify-end mt-4">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleEditToggle}
-                >
-                  Edit Profile
-                </Button>
-              </div>
+            {/* Staff/Admin Specific Fields */}
+            {isStaff && (
+              <>
+                <Grid item xs={12} sm={6}>
+                  <InfoField
+                    label="Department"
+                    value={displayData.departmentName}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InfoField label="Position" value={displayData.position} />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InfoField
+                    label="Join Date"
+                    value={
+                      displayData.joinDate
+                        ? new Date(displayData.joinDate).toLocaleDateString()
+                        : null
+                    }
+                  />
+                </Grid>
+              </>
             )}
-          </div>
-        )}
-      </Paper>
-    </div>
+
+            {/* Student Specific Fields */}
+            {!isStaff && (
+              <>
+                <Grid item xs={12} sm={6}>
+                  <InfoField label="Batch" value={displayData.batch} />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InfoField label="Class" value={`${displayData.className} - ${displayData.classSec}`} />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InfoField
+                    label="Admission Date"
+                    value={
+                      displayData.admissionDate
+                        ? new Date(
+                            displayData.admissionDate
+                          ).toLocaleDateString()
+                        : null
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography
+                    variant="subtitle2"
+                    color="textSecondary"
+                    gutterBottom
+                  >
+                    Fee Details
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={4}>
+                      <Typography variant="caption" color="textSecondary">
+                        Total Fee
+                      </Typography>
+                      <Typography variant="body2">
+                        ₹{displayData.totalFee || "0"}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <Typography variant="caption" color="textSecondary">
+                        Fees Paid
+                      </Typography>
+                      <Typography variant="body2">
+                        ₹{displayData.feesPaid || "0"}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <Typography variant="caption" color="textSecondary">
+                        Fees Due
+                      </Typography>
+                      <Typography variant="body2">
+                        ₹{displayData.feesDue || "0"}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+          </Grid>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 

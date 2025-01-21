@@ -2,22 +2,53 @@ const Admin = require("../models/adminModels");
 const Parents = require("../models/parentModels");
 const Student = require("../models/studentModel");
 const Teachers = require("../models/teacherModels");
+const Department = require("../models/departmentModels");
+const Class = require("../models/classModels")
 const hashPassword = require("../utils/password");
 
 
 
 exports.getProfile = async (req, res) => {
     try {
-        const user = req.user
-        console.log("get profile",user)
-        return res.status(200).json({ message: "Get profile", user })
+        let user = req.user;
+
+        // Clone the user object to avoid modifying an immutable object directly
+        let updatedUser = { ...user._doc }; // Use `_doc` if `user` is a Mongoose document
+
+        if (user.staffId && user.staffId.department) {
+            const department = await Department.findById(user.staffId.department);
+            if (department) {
+                updatedUser.staffId = {
+                    ...user.staffId._doc,
+                    departmentName: department.name, // Replace department ObjectId with name
+                };
+            } else {
+                console.log("No department found for the given ID");
+            }
+        }
+        if (user.class) {
+            const classData = await Class.findById(user.class);
+            if (classData) {
+                updatedUser = {
+                    ...user._doc,
+                    className: classData.name, // Replace class ObjectId with name
+                    classSec: classData.section, // Replace class ObjectId with name
+                };
+            } else {
+                console.log("No class found for the given ID");
+            }
+        }
+
+        console.log("get profile", updatedUser);
+        return res.status(200).json({ message: "Get profile", user: updatedUser });
     } catch (error) {
-        console.log(err);
+        console.log(error); // Corrected error logging
         return res.status(500).send({
-            message: "Internel server error",
+            message: "Internal server error",
         });
     }
-}
+};
+
 
 exports.changePassword = async (req, res) => {
     try {
