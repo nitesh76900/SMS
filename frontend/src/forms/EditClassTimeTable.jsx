@@ -34,69 +34,71 @@ const EditClassTimeTable = () => {
   const [isLoadingClass, setIsLoadingClass] = useState(false);
 
   const [editTimeTable, setEditTimeTable] = useState({
-    classId: "",
-    day: "",
-    periods: [
-      {
-        periodNumber: 1,
-        subject: "",
-        subjectId: "",
-        teacher: "",
-        startTime: "",
-        endTime: "",
-      },
-    ],
+    // classId: "",
+    // day: "",
+    // periods: [
+    //   {
+    //     periodNumber: 1,
+    //     subject: "",
+    //     subjectId: "",
+    //     teacher: "",
+    //     startTime: "",
+    //     endTime: "",
+    //   },
+    // ],
   });
 
   const [classes, setClasses] = useState([]);
   const [classSubjects, setClassSubjects] = useState([]);
   const [freeTeachers, setFreeTeachers] = useState([]);
 
+  const fetchInitialData = async () => {
+    try {
+      setIsLoading(true);
+      // Fetch all classes
+      const classesResponse = await getAllClasses();
+      setClasses(classesResponse.data);
+
+      // Fetch existing timetable details
+      const timetableResponse = await TimeTableService.getTimetableById(id);
+
+      console.log("timetableResponse", timetableResponse);
+
+      // Fetch class details to get subjects
+      const classData = await getClassById(timetableResponse.class._id);
+      console.log("classData.data.subjects", classData.data.subjects);
+      setClassSubjects(classData.data.subjects || []);
+
+      // Update the state with the fetched data
+      const TimeTableData = {
+        classId: timetableResponse.class._id,
+        day: timetableResponse.day,
+        periods: timetableResponse.periods.map((period) => {
+          // const matchedSubject = classSubjects.find(
+          //   (subject) => subject.subjectName === period.subject
+          // );
+          return {
+            periodNumber: period.periodNumber,
+            subject: period.subject,
+            // subjectId: matchedSubject?._id || "", // Use matched subject ID
+            teacher: period.teacher.name,
+            teacherId: period.teacher._id,
+            startTime: period.startTime,
+            endTime: period.endTime,
+            _id: period._id,
+          };
+        }),
+      };
+      console.log("Initial time table", TimeTableData);
+      setEditTimeTable(TimeTableData);
+    } catch (error) {
+      showToast(`Error fetching timetable: ${error.message}`, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        setIsLoading(true);
-        // Fetch all classes
-        const classesResponse = await getAllClasses();
-        setClasses(classesResponse.data);
-
-        // Fetch existing timetable details
-        const timetableResponse = await TimeTableService.getTimetableById(id);
-
-        console.log("timetableResponse", timetableResponse);
-
-        // Update the state with the fetched data
-        setEditTimeTable({
-          classId: timetableResponse.class._id,
-          day: timetableResponse.day,
-          periods: timetableResponse.periods.map((period) => {
-            const matchedSubject = classSubjects.find(
-              (subject) => subject.subjectName === period.subject
-            );
-            return {
-              periodNumber: period.periodNumber,
-              subject: period.subject,
-              subjectId: matchedSubject?._id || "", // Use matched subject ID
-              teacher: period.teacher.name,
-              teacherId: period.teacher._id,
-              startTime: period.startTime,
-              endTime: period.endTime,
-              _id: period._id,
-            };
-          }),
-        });
-
-        // Fetch class details to get subjects
-        const classData = await getClassById(timetableResponse.class._id);
-        // console.log("classData.data.subjects", classData.data.subjects);
-        setClassSubjects(classData.data.subjects || []);
-      } catch (error) {
-        showToast(`Error fetching timetable: ${error.message}`, "error");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchInitialData();
   }, [id, showToast]);
 
@@ -105,8 +107,8 @@ const EditClassTimeTable = () => {
       if (!classId) return;
 
       setIsLoadingClass(true);
-      const classData = await getClassById(classId);
-      setClassSubjects(classData.data.subjects || []);
+      // const classData = await getClassById(classId);
+      // setClassSubjects(classData.data.subjects || []);
 
       setEditTimeTable((prev) => ({
         ...prev,
@@ -135,11 +137,9 @@ const EditClassTimeTable = () => {
     const newPeriods = [...editTimeTable.periods];
     newPeriods[periodIndex] = {
       ...newPeriods[periodIndex],
-      subject: subject.subjectName,
-      subjectId: subject._id,
-      teacher: subject.teacher?.name || "",
-      teacherId: subject.teacher?._id || "",
+      subject: subject
     };
+    console.log(newPeriods)
 
     setEditTimeTable((prev) => ({
       ...prev,
@@ -198,7 +198,7 @@ const EditClassTimeTable = () => {
     }
 
     try {
-      setIsSubmitting(true);  
+      setIsSubmitting(true);
       const payload = {
         class: editTimeTable.classId,
         day: editTimeTable.day,
@@ -351,17 +351,14 @@ const EditClassTimeTable = () => {
                     </Typography>
                     <Select
                       fullWidth
-                      value={period.subjectId || ""}
+                      value={period.subject || ""}
                       onChange={(e) => {
-                        const selectedSubject = classSubjects.find(
-                          (subject) => subject._id === e.target.value
-                        );
-                        handleSubjectSelection(index, selectedSubject);
+                        handleSubjectSelection(index, e.target.value);
                       }}
                       disabled={!editTimeTable.day}
                     >
-                      {classSubjects.map((subject) => (
-                        <MenuItem key={subject._id} value={subject._id}>
+                      {classSubjects.map((subject, index) => (
+                        <MenuItem key={index} value={subject.subjectName}>
                           {subject.subjectName}
                         </MenuItem>
                       ))}
