@@ -10,6 +10,7 @@ const hashPassword = require("../utils/password");
 const { registrationEmail } = require("../utils/html/html");
 const Connections = require("../models/connectionModels");
 const sendEmail = require("../utils/sendMail");
+const Department = require("../models/departmentModels")
 
 exports.createAdmin = async (req, res) => {
   console.log("Received request to add admin:", req.body);

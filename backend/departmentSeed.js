@@ -4,7 +4,6 @@ const connectDB = require("./db/db");
 // require("dotenv").config();
 require("dotenv").config({ path: "../.env" });
 
-
 const createDepartment = async () => {
   try {
     console.log("process.env.DB_URL", process.env.DB_URL);
