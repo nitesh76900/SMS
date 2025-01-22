@@ -91,8 +91,8 @@ exports.updateAttendance = async (req, res) => {
     const { staffId, date, status } = req.body;
 
     const staff = await Staff.findById(staffId);
-    if(!staff || !staff.isActive){
-      return res.status(404).json({error: "Staff not found"})
+    if (!staff || !staff.isActive) {
+      return res.status(404).json({ error: "Staff not found" });
     }
 
     console.log("updateAttendance: Query date set to:", date);
@@ -105,11 +105,12 @@ exports.updateAttendance = async (req, res) => {
 
     const entryTime =
       status === "present"
-        ? new Date().toLocaleTimeString("en-US", {
+        ? new Intl.DateTimeFormat("en-US", {
             hour: "numeric",
             minute: "2-digit",
             hour12: true,
-          })
+            timeZone: "Asia/Kolkata",
+          }).format(new Date())
         : "";
 
     if (attendance) {
