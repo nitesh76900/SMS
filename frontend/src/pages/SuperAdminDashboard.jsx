@@ -1,17 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  LineChart, Line, BarChart, Bar, PieChart, Pie, 
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
-  Legend
-} from 'recharts';
-import { 
-  Users, GraduationCap, UserCheck, IndianRupee, 
-  Clock, BellRing, UserPlus, HeartPulse
-} from 'lucide-react';
-import AdminDashboardService from '../services/adminDashboardService';
-import { useToast } from '../context/ToastContext';
+import React, { useEffect, useState } from "react";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+  Legend,
+} from "recharts";
+import {
+  Users,
+  GraduationCap,
+  UserCheck,
+  IndianRupee,
+  Clock,
+  BellRing,
+  UserPlus,
+  HeartPulse,
+} from "lucide-react";
+import AdminDashboardService from "../services/adminDashboardService";
+import { useToast } from "../context/ToastContext";
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#8884d8",
+  "#82ca9d",
+];
 
 const StatsCard = ({ title, value, icon: Icon, subValue, subLabel, trend }) => (
   <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-200">
@@ -20,8 +43,12 @@ const StatsCard = ({ title, value, icon: Icon, subValue, subLabel, trend }) => (
         <Icon className="h-6 w-6 text-blue-500" />
       </div>
       {trend && (
-        <span className={`text-sm font-medium ${trend >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-          {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
+        <span
+          className={`text-sm font-medium ${
+            trend >= 0 ? "text-green-500" : "text-red-500"
+          }`}
+        >
+          {trend > 0 ? "↑" : "↓"} {Math.abs(trend)}%
         </span>
       )}
     </div>
@@ -53,11 +80,12 @@ const SuperAdminDashboard = () => {
   const fetchDashboardStats = async () => {
     try {
       const response = await AdminDashboardService.getDashboardStats();
+      console.log("response", response);
       setDashboardData(response.data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
-      showToast('Failed to fetch dashboard statistics', 'error');
+      console.error("Error fetching dashboard stats:", error);
+      showToast("Failed to fetch dashboard statistics", "error");
       setLoading(false);
     }
   };
@@ -68,11 +96,11 @@ const SuperAdminDashboard = () => {
       await AdminDashboardService.updateDashboardStats();
       const response = await AdminDashboardService.getDashboardStats();
       setDashboardData(response.data);
-      showToast('Dashboard data refreshed successfully', 'success');
+      showToast("Dashboard data refreshed successfully", "success");
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
-      showToast('Failed to refresh dashboard data', 'error');
+      console.error("Error fetching dashboard stats:", error);
+      showToast("Failed to refresh dashboard data", "error");
       setLoading(false);
     }
   };
@@ -91,51 +119,58 @@ const SuperAdminDashboard = () => {
     );
   }
 
-  const formatCurrency = (amount) => 
-    new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' })
-      .format(amount);
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+    }).format(amount);
 
-  // Prepare chart data
-  const departmentData = dashboardData?.staffStats?.departmentDistribution.map(dept => ({
-    name: dept?.departmentId?.name || null,
-    value: dept?.staffCount + dept?.teacherCount || null
-  })) ;
+  const revenueData = dashboardData.financialStats.monthlyRevenue.map(
+    (item) => ({
+      month: new Date(item.month).toLocaleDateString("en-US", {
+        month: "short",
+      }),
+      amount: item.amount,
+    })
+  );
 
-  const revenueData = dashboardData.financialStats.monthlyRevenue.map(item => ({
-    month: new Date(item.month).toLocaleDateString('en-US', { month: 'short' }),
-    amount: item.amount
-  }));
-
-  const connectionData = dashboardData.connectionStats.professionDistribution.map(item => ({
-    name: item.profession.charAt(0).toUpperCase() + item.profession.slice(1),
-    value: item.count
-  }));
+  const connectionData =
+    dashboardData.connectionStats.professionDistribution.map((item) => ({
+      name: item.profession.charAt(0).toUpperCase() + item.profession.slice(1),
+      value: item.count,
+    }));
 
   const attendanceData = [
     {
-      name: 'Students',
+      name: "Students",
       present: dashboardData.attendanceStats.students.monthly.present,
-      absent: dashboardData.attendanceStats.students.monthly.absent
+      absent: dashboardData.attendanceStats.students.monthly.absent,
     },
     {
-      name: 'Teachers',
+      name: "Teachers",
       present: dashboardData.attendanceStats.teachers.monthly.present,
-      absent: dashboardData.attendanceStats.teachers.monthly.absent
-    }
+      absent: dashboardData.attendanceStats.teachers.monthly.absent,
+    },
   ];
 
-  const salaryData = dashboardData.financialStats.salaryDistribution.map(dept => ({
-    name: dept?.department?.name || null,
-    salary: dept?.totalSalary || null
-  }));
+  const salaryData = dashboardData.financialStats.salaryDistribution.map(
+    (dept) => ({
+      name: dept?.department?.name || null,
+      salary: dept?.totalSalary || null,
+    })
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-800">Super Admin Dashboard</h1>
-            <p className="text-sm text-gray-500 mt-1">Comprehensive overview of your institution</p>
+            <h1 className="text-4xl font-bold text-gray-800">
+              Super Admin Dashboard
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Comprehensive overview of your institution
+            </p>
           </div>
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
             <div className="px-4 py-2 bg-white rounded-lg shadow-sm">
@@ -144,7 +179,7 @@ const SuperAdminDashboard = () => {
                 {new Date(dashboardData.lastUpdated).toLocaleString()}
               </span>
             </div>
-            <button 
+            <button
               onClick={refreshData}
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
@@ -152,10 +187,10 @@ const SuperAdminDashboard = () => {
             </button>
           </div>
         </div>
-        
+
         {/* Top Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatsCard 
+          <StatsCard
             title="Total Students"
             value={dashboardData.studentStats.totalStudents}
             icon={Users}
@@ -163,16 +198,18 @@ const SuperAdminDashboard = () => {
             subLabel="New Admissions"
             trend={10}
           />
-          
-          <StatsCard 
+
+          <StatsCard
             title="Total Staff"
             value={dashboardData.staffStats.totalStaff}
             icon={GraduationCap}
-            subValue={`${dashboardData.staffStats.teacherStudentRatio.toFixed(2)}`}
+            subValue={`${dashboardData.staffStats.teacherStudentRatio.toFixed(
+              2
+            )}`}
             subLabel="Teacher-Student Ratio"
           />
-          
-          <StatsCard 
+
+          <StatsCard
             title="Revenue Collection"
             value={formatCurrency(dashboardData.financialStats.totalRevenue)}
             icon={IndianRupee}
@@ -180,16 +217,20 @@ const SuperAdminDashboard = () => {
             subLabel="Collection Rate"
             trend={5}
           />
-          
-          <StatsCard 
+
+          <StatsCard
             title="Parent Connections"
-            value={dashboardData.communicationStats.parentEngagement.totalConnections}
+            value={
+              dashboardData.communicationStats.parentEngagement.totalConnections
+            }
             icon={UserCheck}
-            subValue={dashboardData.communicationStats.parentEngagement.activeParents}
+            subValue={
+              dashboardData.communicationStats.parentEngagement.activeParents
+            }
             subLabel="Active Parents"
           />
 
-          <StatsCard 
+          <StatsCard
             title="Live Sessions"
             value={dashboardData.liveSessionStats.today.scheduled}
             icon={Clock}
@@ -197,7 +238,7 @@ const SuperAdminDashboard = () => {
             subLabel="Avg Duration"
           />
 
-          <StatsCard 
+          <StatsCard
             title="Active Notices"
             value={dashboardData.communicationStats.activeNotices}
             icon={BellRing}
@@ -205,7 +246,7 @@ const SuperAdminDashboard = () => {
             subLabel="Scheduled Events"
           />
 
-          <StatsCard 
+          <StatsCard
             title="New Connections"
             value={dashboardData.connectionStats.newConnectionsThisMonth}
             icon={UserPlus}
@@ -213,11 +254,14 @@ const SuperAdminDashboard = () => {
             subLabel="Total Users"
           />
 
-          <StatsCard 
+          <StatsCard
             title="Monthly Attendance"
-            value={`${((dashboardData.attendanceStats.students.monthly.present / 
-              (dashboardData.attendanceStats.students.monthly.present + 
-               dashboardData.attendanceStats.students.monthly.absent)) * 100).toFixed(1)}%`}
+            value={`${(
+              (dashboardData.attendanceStats.students.monthly.present /
+                (dashboardData.attendanceStats.students.monthly.present +
+                  dashboardData.attendanceStats.students.monthly.absent)) *
+              100
+            ).toFixed(1)}%`}
             icon={HeartPulse}
             subValue="Students Present"
             subLabel="Average"
@@ -226,8 +270,8 @@ const SuperAdminDashboard = () => {
 
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ChartCard 
-            title="Revenue Trend" 
+          <ChartCard
+            title="Revenue Trend"
             subtitle="Monthly revenue collection pattern"
           >
             <div className="h-80 w-full">
@@ -236,19 +280,19 @@ const SuperAdminDashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <Tooltip 
+                  <Tooltip
                     formatter={(value) => formatCurrency(value)}
-                    contentStyle={{ 
-                      backgroundColor: '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                    contentStyle={{
+                      backgroundColor: "#fff",
+                      border: "none",
+                      borderRadius: "8px",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                     }}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="amount" 
-                    stroke="#0088FE" 
+                  <Line
+                    type="monotone"
+                    dataKey="amount"
+                    stroke="#0088FE"
                     strokeWidth={2}
                     dot={{ r: 4 }}
                   />
@@ -257,8 +301,8 @@ const SuperAdminDashboard = () => {
             </div>
           </ChartCard>
 
-          <ChartCard 
-            title="User Distribution" 
+          <ChartCard
+            title="User Distribution"
             subtitle="Platform user type breakdown"
           >
             <div className="h-80 w-full">
@@ -272,7 +316,10 @@ const SuperAdminDashboard = () => {
                     dataKey="value"
                   >
                     {connectionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -282,8 +329,8 @@ const SuperAdminDashboard = () => {
             </div>
           </ChartCard>
 
-          <ChartCard 
-            title="Department Salary Distribution" 
+          <ChartCard
+            title="Department Salary Distribution"
             subtitle="Total salary by department"
           >
             <div className="h-80 w-full">
@@ -295,7 +342,10 @@ const SuperAdminDashboard = () => {
                   <Tooltip formatter={(value) => formatCurrency(value)} />
                   <Bar dataKey="salary" fill="#0088FE">
                     {salaryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Bar>
                 </BarChart>
@@ -303,8 +353,8 @@ const SuperAdminDashboard = () => {
             </div>
           </ChartCard>
 
-          <ChartCard 
-            title="Monthly Attendance" 
+          <ChartCard
+            title="Monthly Attendance"
             subtitle="Staff and student attendance patterns"
           >
             <div className="h-80 w-full">
