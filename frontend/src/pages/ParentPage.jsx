@@ -9,8 +9,12 @@ import {
 import { getAllParents, updateParent } from "../services/parentsServices";
 import { useToast } from "../context/ToastContext";
 import Loader from "../components/Loader/Loader";
+import { useSelector } from "react-redux";
+import { selectUser } from "../store/slices/userSlice";
 
 const ParentsPage = () => {
+  const user = useSelector(selectUser);
+  const [role, setRole] = useState(null);
   const [parents, setParents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,6 +26,11 @@ const ParentsPage = () => {
   });
   const [showEditModal, setShowEditModal] = useState(false);
   const showToast = useToast();
+
+  useEffect(() => {
+    console.log("user roleeeeeeeeee", user?.role);
+    setRole(user?.role);
+  }, [user]);
 
   // Fetch parents and classes on component mount
   useEffect(() => {
@@ -246,9 +255,11 @@ const ParentsPage = () => {
                   <th className="text-left px-6 py-3 text-sm font-semibold text-gray-900">
                     Phone
                   </th>
-                  <th className="text-right px-6 py-3 text-sm font-semibold text-gray-900">
-                    Actions
-                  </th>
+                  {(role === "superAdmin" || role === "admin") && (
+                    <th className="text-right px-6 py-3 text-sm font-semibold text-gray-900">
+                      Actions
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -281,17 +292,19 @@ const ParentsPage = () => {
                         <span>{parent?.phoneNo || "N/A"}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-end">
-                        <button
-                          onClick={() => handleEditClick(parent)}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                        >
-                          <PiPencilSimple className="text-lg" />
-                          Edit
-                        </button>
-                      </div>
-                    </td>
+                    {(role === "superAdmin" || role === "admin") && (
+                      <td className="px-6 py-4">
+                        <div className="flex justify-end">
+                          <button
+                            onClick={() => handleEditClick(parent)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                          >
+                            <PiPencilSimple className="text-lg" />
+                            Edit
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

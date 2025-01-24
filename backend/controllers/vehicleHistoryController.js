@@ -5,7 +5,8 @@ const { isValidObjectId } = require("mongoose");
 
 // Helper function to check if user is authorized
 const isAuthorized = (user, vehicle) => {
-  return user.role === "superAdmin";
+  console.log(vehicle.driverAssigned.includes(user._id))
+  return (user.role === "superAdmin" || vehicle?.driverAssigned?.includes(user._id));
   // || vehicle.driver.includes(user._id);
 };
 

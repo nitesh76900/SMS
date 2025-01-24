@@ -20,7 +20,7 @@ const TestManagement = () => {
     const fetchTests = async () => {
       try {
         const response = await TestService.getAllTests();
-        console.log("response", response);
+        console.log("response.data", response);
         setTests(response);
         setLoading(false);
         showToast("Tests loaded successfully", "success");
@@ -57,6 +57,19 @@ const TestManagement = () => {
   };
 
   const filteredTests = tests.filter((test) => {
+    // Admin and SuperAdmin can see all tests
+    if (user?.role === "admin" || user?.role === "superAdmin") {
+      return true;
+    }
+
+    // Check if the test's class matches the user's classes or created by user
+    const isUserClassTest =
+      test.class?._id === user.leadClass || // Check if user is the class teacher
+      user.assignedClass?.includes(test.class?._id) || // Check if user is assigned to this class
+      test.createdBy === user._id || // Check if user created the test
+      test.class?.students?.includes(user._id); // Check if user is a student of the class
+
+    // Search and filter conditions
     const matchesSearch =
       test.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       test.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -66,12 +79,11 @@ const TestManagement = () => {
     const matchesFilter =
       selectedFilter === "all" ||
       (selectedFilter === "active" && testStatus === "Active") ||
-      (selectedFilter === "draft" && testStatus === "Draft") ||
+      (selectedFilter === "draft" && testStatus === "Upcoming") ||
       (selectedFilter === "completed" && testStatus === "Completed");
 
-    return matchesSearch && matchesFilter;
+    return isUserClassTest && matchesSearch && matchesFilter;
   });
-
   const isTestActive = (test) => {
     return getTestStatus(test) === "Active";
   };
@@ -96,16 +108,14 @@ const TestManagement = () => {
   };
 
   const handleTestClick = (test) => {
-    {
-      if (
-        user?.role === "admin" ||
-        user?.role === "superAdmin" ||
-        user?.role === "teacher"
-      ) {
-        navigate(`/submission/all/${test._id}`);
-      } else {
-        navigate(`/assesments/${test._id}`);
-      }
+    if (
+      user?.role === "admin" ||
+      user?.role === "superAdmin" ||
+      user?.role === "teacher"
+    ) {
+      navigate(`/submission/all/${test._id}`);
+    } else {
+      navigate(`/assesments/${test._id}`);
     }
   };
 
@@ -243,7 +253,8 @@ const TestManagement = () => {
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 font-medium">
-                        {test.subject?.name || test.subject}
+                        {test?.class?.name}-{test?.class?.section} (
+                        {test.subject})
                       </p>
                     </div>
                   </div>

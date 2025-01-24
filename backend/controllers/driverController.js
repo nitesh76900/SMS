@@ -96,6 +96,10 @@ exports.addDriver = async (req, res) => {
     // console.log("Created Staff:", createdStaff[0]);
     const staffId = createdStaff[0]._id;
     console.log("Extracted Staff ID:", staffId);
+    console.log("Extracted Staff:", staff);
+
+    department.staffMembers.push(staff[0]._id); // Push the ObjectId directly
+    await department.save({ session });
 
     // Generate unique registration number and hash the password
     const uniqueId = `D${await generateUniqueId()}`;
@@ -131,9 +135,9 @@ exports.addDriver = async (req, res) => {
           password: hashedPassword,
           img: imageResponse
             ? {
-              public_id: imageResponse.public_id,
-              url: imageResponse.url,
-            }
+                public_id: imageResponse.public_id,
+                url: imageResponse.url,
+              }
             : undefined,
         },
       ],
@@ -159,7 +163,7 @@ exports.addDriver = async (req, res) => {
       .status(500)
       .json({ message: "Failed to add driver.", error: error.message });
   } finally {
-    await emptyTempFolder()
+    await emptyTempFolder();
   }
 };
 
@@ -303,7 +307,7 @@ exports.updateDriver = async (req, res) => {
       .status(500)
       .json({ message: "Failed to update driver.", error: error.message });
   } finally {
-    await emptyTempFolder()
+    await emptyTempFolder();
   }
 };
 

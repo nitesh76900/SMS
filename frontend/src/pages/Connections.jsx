@@ -18,8 +18,12 @@ import {
 } from "../services/connectionService";
 import { useToast } from "../context/ToastContext";
 import Loader from "../components/Loader/Loader";
+import { useSelector } from "react-redux";
+import { selectUser } from "../store/slices/userSlice";
 
 const Connections = () => {
+  const user = useSelector(selectUser);
+  const [role, setRole] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortType, setSortType] = useState("");
   const [connections, setConnections] = useState([]);
@@ -33,6 +37,11 @@ const Connections = () => {
 
   const navigate = useNavigate();
   const showToast = useToast();
+
+  useEffect(() => {
+    console.log("user roleeeeeeeeee", user?.role);
+    setRole(user?.role);
+  }, [user]);
 
   // Fetch connections on component mount
   useEffect(() => {
@@ -169,13 +178,15 @@ const Connections = () => {
             Manage your network of students, teachers, and parents
           </p>
         </div>
-        <button
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={() => navigate("/addconnection")}
-        >
-          <PiUserPlus className="text-lg" />
-          Add Connection
-        </button>
+        {(role === "superAdmin" || role === "admin") && (
+          <button
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={() => navigate("/addconnection")}
+          >
+            <PiUserPlus className="text-lg" />
+            Add Connection
+          </button>
+        )}
       </div>
 
       {/* Search and Filter */}
@@ -223,9 +234,11 @@ const Connections = () => {
                 <th className="text-left px-6 py-3 text-sm font-semibold text-gray-900">
                   Contact Information
                 </th>
-                <th className="text-right px-6 py-3 text-sm font-semibold text-gray-900">
-                  Actions
-                </th>
+                {(role === "superAdmin" || role === "admin") && (
+                  <th className="text-right px-6 py-3 text-sm font-semibold text-gray-900">
+                    Actions
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -264,24 +277,26 @@ const Connections = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => handleEditClick(contact)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                      >
-                        <PiPencilSimple className="text-lg" />
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(contact)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                      >
-                        <PiTrash className="text-lg" />
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+                  {(role === "superAdmin" || role === "admin") && (
+                    <td className="px-6 py-4">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => handleEditClick(contact)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                        >
+                          <PiPencilSimple className="text-lg" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(contact)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                        >
+                          <PiTrash className="text-lg" />
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

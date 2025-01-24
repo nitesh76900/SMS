@@ -66,7 +66,7 @@ const VehicleHistoriesPage = () => {
   };
 
   const handleNavigate = (id) => {
-    if (role === "superAdmin") {
+    if (role === "superAdmin" || role === "driver") {
       navigate(`/vehicle-tracking/${id}`);
     } else {
       navigate(`/show-tracking/${id}`);
@@ -77,7 +77,7 @@ const VehicleHistoriesPage = () => {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Vehicle Histories</h1>
-        {role === "superAdmin" && (
+        {(role === "superAdmin" || role === "driver")  && (
           <button
             onClick={() => setShowAddForm(true)}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center"

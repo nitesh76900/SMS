@@ -113,7 +113,7 @@ const AddLiveSessionModal = ({
                       {classes &&
                         classes.map((cls) => (
                           <option key={cls._id} value={cls._id}>
-                            {cls.name}
+                            {cls.name}-{cls.section}
                           </option>
                         ))}
                     </select>

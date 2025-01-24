@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { BsCalendar3, BsClock, BsPeople, BsSearch } from "react-icons/bs";
-import { MdVideoCall, MdEdit, MdDelete, MdAdd } from "react-icons/md";
+import { BsCalendar3, BsClock, BsSearch } from "react-icons/bs";
+import { MdVideoCall, MdDelete, MdAdd } from "react-icons/md";
 import {
   getAllLiveSessions,
   updateLiveSession,
   createLiveSession,
   deleteLiveSession,
   updateSessionStatus,
-  getLiveSessionById,
 } from "../services/liveSessionServices";
 import { getAllClasses } from "../services/classService";
 import teacherService from "../services/teacherService";
@@ -47,6 +46,7 @@ const LiveSessionManagement = () => {
 
   const showToast = useToast();
   const user = useSelector(selectUser);
+  console.log("User", user);
 
   // Fetch initial data
   useEffect(() => {
@@ -59,7 +59,6 @@ const LiveSessionManagement = () => {
       fetchClassStudents(formData.class);
     }
   }, [formData.class]);
-  // console.log("classStudents:", classStudents);
 
   const fetchAllData = async () => {
     try {
@@ -77,6 +76,7 @@ const LiveSessionManagement = () => {
 
   const fetchSessions = async () => {
     const data = await getAllLiveSessions();
+    console.log("data.sessions", data.sessions);
     setSessions(data.sessions);
   };
 
@@ -198,7 +198,15 @@ const LiveSessionManagement = () => {
   };
 
   const filteredSessions = sessions
-    .filter((session) => activeTab === "all" || session.status === activeTab)
+    .filter((session) => {
+      if (user?.role === "teacher") {
+        return session.teacher._id === user._id; // Show sessions for the logged-in teacher
+      }
+      if (user?.role === "student") {
+        return session.students.includes(user._id); // Show sessions for the logged-in student
+      }
+      return true; // For admin or other roles, show all sessions
+    })
     .filter(
       (session) =>
         session.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

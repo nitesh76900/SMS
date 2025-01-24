@@ -10,7 +10,8 @@ const hashPassword = require("../utils/password");
 const { registrationEmail } = require("../utils/html/html");
 const Connections = require("../models/connectionModels");
 const sendEmail = require("../utils/sendMail");
-const Department = require("../models/departmentModels")
+const Department = require("../models/departmentModels");
+const Driver = require("../models/DriverModel");
 
 exports.createAdmin = async (req, res) => {
   console.log("Received request to add admin:", req.body);
@@ -137,6 +138,10 @@ exports.login = async (req, res) => {
         ? await Teachers.findOne({ registrationNumber: loginId })
             .select("+password")
             .populate("staffId")
+        : loginId[0] === "D"
+        ? await Driver.findOne({ registrationNumber: loginId })
+            .select("+password")
+            .populate("staffId")
         : loginId[0] === "S"
         ? await Student.findOne({ registrationNumber: loginId }).select(
             "+password"
@@ -173,11 +178,9 @@ exports.login = async (req, res) => {
 
     // parents
     if (loginId[0] === "P" && !userData.student.isActive) {
-      return res
-        .status(401)
-        .json({
-          error: "Your children is removed, contact teachers and admin",
-        });
+      return res.status(401).json({
+        error: "Your children is removed, contact teachers and admin",
+      });
     }
 
     const token = await generateToken(userData._id, loginId);

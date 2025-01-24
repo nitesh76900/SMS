@@ -23,6 +23,10 @@ const driverSchema = new mongoose.Schema({
     img: {
         public_id: {type: String, required: true},
         url: {type: String, required: true},
+    },
+    role:{
+        type: String,
+        default: "driver"
     }
 }, {
     timestamps: true, // Adds `createdAt` and `updatedAt` fields

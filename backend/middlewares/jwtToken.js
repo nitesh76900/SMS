@@ -3,6 +3,7 @@ const Admin = require("../models/adminModels");
 const Teachers = require("../models/teacherModels");
 const studentModel = require("../models/studentModel");
 const Parents = require("../models/parentModels");
+const Driver = require("../models/DriverModel");
 
 const jwtToken = async (req, res, next) => {
   let token = req.cookies.token;
@@ -19,6 +20,8 @@ const jwtToken = async (req, res, next) => {
         ? await Admin.findById(decoded.id).populate("staffId")
         : rsNo[0] === "T"
         ? await Teachers.findById(decoded.id).populate("staffId")
+        : rsNo[0] === "D"
+        ? await Driver.findById(decoded.id).populate("staffId")
         : rsNo[0] === "S"
         ? await studentModel.findById(decoded.id)
         : await Parents.findById(decoded.id).populate("student");

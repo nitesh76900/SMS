@@ -4,6 +4,12 @@ const Student = require("../models/studentModel");
 // Add marks for a student
 exports.addStudentMarks = async (req, res) => {
   try {
+
+    const {studentId} = req.body
+    if(await StudentMarks.findOne({studentId})){
+      return res.status(400).json({message: "already created."})
+    }
+
     console.log("req.body:", req.body);
     const newMarks = new StudentMarks(req.body);
     await newMarks.save();
@@ -71,7 +77,7 @@ exports.updateStudentMarks = async (req, res) => {
   try {
     console.log("req.params", req.params);
     console.log("req.body", req.body);
-    const studentData=await StudentMarks.findOne({_id: req.params.studentId}).populate("studentId isActive")
+    const studentData=await StudentMarks.findOne({_id: req.params.studentId}).populate("studentId")
     console.log('studentData', studentData);
     const updatedMarks = await StudentMarks.findOneAndUpdate(
       { _id: req.params.studentId },
@@ -92,6 +98,7 @@ exports.updateStudentMarks = async (req, res) => {
       .status(200)
       .json({ message: "Marks updated successfully", data: updatedMarks });
   } catch (error) {
+    console.log(error)
     res
       .status(500)
       .json({ message: "Error updating marks", error: error.message });

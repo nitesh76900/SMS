@@ -117,7 +117,7 @@ exports.getAllTests = async (req, res) => {
 
     console.log("Fetching all tests...");
     const tests = await Test.find()
-      .populate("questions");
+      .populate("questions").populate("class");
     console.log("Tests fetched successfully:", tests);
 
     return res.status(200).json({

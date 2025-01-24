@@ -23,7 +23,6 @@ import TeacherAttendance from "./pages/TeacherListAttendanceSystem";
 import AssesmentQuestions from "./pages/AssesmentQuestions";
 import AssessmentResult from "./pages/AssesmentResult";
 import TestForm from "./forms/TestForm";
-import TestManagement from "./pages/TestManagement";
 import LiveSessionManagement from "./pages/LiveSession";
 import DashboardPage from "./pages/Staff";
 import DepartmentPage from "./pages/DepartmentPage";
@@ -60,6 +59,7 @@ import ShowVehicleTracking from "./pages/ShowVehicleTracking";
 import AddVehicleHistoryForm from "./forms/AddVehicleHistoryForm";
 import Loader from "./components/Loader/Loader";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import TestManagement from "./pages/TestManagement";
 
 const App = () => {
   const user = useSelector(selectUser);
