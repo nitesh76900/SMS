@@ -1,3 +1,4 @@
+const Class = require("../models/classModels");
 const Staff = require("../models/staffModels");
 const Teacher = require("../models/teacherModels");
 
@@ -54,6 +55,7 @@ const updateTeacher = async (req, res) => {
   const updateData = req.body;
 
   try {
+
     const updatedTeacher = await Teacher.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
@@ -65,6 +67,19 @@ const updateTeacher = async (req, res) => {
       return res.status(404).json({
         error: "Teacher not found",
       });
+    }
+    if(updateData.leadClass){
+      const classData = await Class.findById(updateData.leadClass)
+      if(!classData){
+        return res.status(404).json({error: "class not found"})
+      }
+      if(classData.classTeacher){
+        const existTeacher= await Teacher.findById(classData.classTeacher)
+        existTeacher.leadClass = null
+        await existTeacher.save()
+      }
+      classData.classTeacher = id
+      await classData.save()
     }
     res.status(200).json({
       message: "Teacher updated successfully",

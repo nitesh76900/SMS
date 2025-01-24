@@ -254,6 +254,13 @@ exports.addTeacher = async (req, res) => {
             }
             // Only set classTeacher if leadClass is not empty and matches
             if (leadClass && leadClass !== "" && classData._id.equals(leadClass)) {
+              if(classData.classTeacher){
+                const existClassteacher = await Teachers.findById(classData.classTeacher)
+                if(existClassteacher){
+                  existClassteacher.leadClass = null;
+                  await existClassteacher.save();
+                }
+              }
               classData.classTeacher = newTeacher._id;
             }
             await classData.save();

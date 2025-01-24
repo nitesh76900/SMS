@@ -36,7 +36,6 @@ import Class from "./pages/Class";
 import AddClassForm from "./pages/AddClassForm";
 import EditTeachersForm from "./forms/EditTeachersForm";
 import TeacherDetail from "./pages/TeacherDetail";
-import { Toaster } from "react-hot-toast";
 import TransportManagement from "./pages/TransportManagement";
 import AddStudentMarksForm from "./forms/AddStudentMarksForm";
 import ReceiptModal from "./modals/ReceiptModal";
@@ -48,7 +47,7 @@ import AddClassTimeTable from "./forms/AddClassTimeTable";
 import EditClassTimeTable from "./forms/EditClassTimeTable";
 import VehicleDetails from "./pages/TransportManagement/VehicleInfo";
 import VehicleForm from "./pages/TransportManagement/VehicleForm";
-import { fetchUser, setUser } from "./store/slices/userSlice";
+import { fetchUser } from "./store/slices/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { selectUser } from "./store/slices/userSlice";
@@ -59,18 +58,38 @@ import RouteForm from "./pages/TransportManagement/RouteForm";
 import VehicleHistoriesPage from "./pages/VehicleHistoriesPage";
 import ShowVehicleTracking from "./pages/ShowVehicleTracking";
 import AddVehicleHistoryForm from "./forms/AddVehicleHistoryForm";
+import Loader from "./components/Loader/Loader";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 const App = () => {
   const user = useSelector(selectUser);
+  const [loading, setLoading] = useState(true);
   const [role, setRole] = useState(null);
+
   const dispatch = useDispatch();
+
+  const fetchUserAuth = () => {
+    dispatch(fetchUser())
+      .then(() => {
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  };
   useEffect(() => {
-    dispatch(fetchUser()); // Call the thunk when the component mounts
+    fetchUserAuth();
   }, [dispatch]);
+
   useEffect(() => {
     console.log("user roleeeeeeeeee", user?.role);
     setRole(user?.role);
   }, [user]);
+
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <BrowserRouter>
       <Routes>
@@ -78,441 +97,536 @@ const App = () => {
         <Route
           path="/addConnection"
           element={
-            <Layout>
-              <AddConnectionForm />{" "}
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AddConnectionForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/connections"
           element={
-            <Layout>
-              <Connections />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <Connections />
+              </Layout>
+            </ProtectedRoute>
           }
         />
 
         <Route
           path="/profile"
           element={
-            <Layout>
-              <Profile />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <Profile />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/class"
           element={
-            <Layout>
-              <Class />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <Class />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/add-class"
           element={
-            <Layout>
-              <AddClassForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AddClassForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/edit-student/:id"
           element={
-            <Layout>
-              <EditStudentForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <EditStudentForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/student-marks"
           element={
-            <Layout>
-              <StudentMarksPage />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <StudentMarksPage />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/add-student-marks"
           element={
-            <Layout>
-              <AddStudentMarksForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AddStudentMarksForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/edit-marks/:studentId"
           element={
-            <Layout>
-              <EditStudentMarksModal />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <EditStudentMarksModal />
+              </Layout>
+            </ProtectedRoute>
           }
         />
 
         <Route
           path="/dashboard"
           element={
-            role === "admin" || role === "superAdmin" ? (
-              <Layout>
-                <SuperAdminDashboard />
-              </Layout>
-            ) : role === "teacher" ? (
-              <Layout>
-                <TeacherDashboard />
-              </Layout>
-            ) : (
-              <Layout>
-                <StudentDashboard />
-              </Layout>
-            )
+            <ProtectedRoute>
+              {role === "admin" || role === "superAdmin" ? (
+                <Layout>
+                  <SuperAdminDashboard />
+                </Layout>
+              ) : role === "teacher" ? (
+                <Layout>
+                  <TeacherDashboard />
+                </Layout>
+              ) : (
+                <Layout>
+                  <StudentDashboard />
+                </Layout>
+              )}
+            </ProtectedRoute>
           }
         />
         <Route
           path="/students"
           element={
-            <Layout>
-              <Students />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <Students />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/addmission-form"
           element={
-            <Layout>
-              <AddmissionForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AddmissionForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/teachers"
           element={
-            <Layout>
-              <Teachers />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <Teachers />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/transport"
           element={
-            <Layout>
-              <TransportManagement />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <TransportManagement />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/vehicle/:id"
           element={
-            <Layout>
-              <VehicleDetails />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <VehicleDetails />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/edit-vehicle/:id"
           element={
-            <Layout>
-              <VehicleForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <VehicleForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/add-route-form"
           element={
-            <Layout>
-              <RouteForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <RouteForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/edit-route-form/:id"
           element={
-            <Layout>
-              <RouteForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <RouteForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/vehicle-histories"
           element={
-            <Layout>
-              <VehicleHistoriesPage />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <VehicleHistoriesPage />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/add-vehicle-history-form"
           element={
-            <Layout>
-              <AddVehicleHistoryForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AddVehicleHistoryForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/addteachers"
           element={
-            <Layout>
-              <AddTeachersForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AddTeachersForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/teachers/:id"
           element={
-            <Layout>
-              <TeacherDetail />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <TeacherDetail />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/teachers/edit/:id"
           element={
-            <Layout>
-              <EditTeachersForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <EditTeachersForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/add-staff"
           element={
-            <Layout>
-              <AddStaffForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AddStaffForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/parents"
           element={
-            <Layout>
-              <ParentsPage />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <ParentsPage />
+              </Layout>
+            </ProtectedRoute>
           }
         />
-        <Route
-          // path="/parents"
-          element={
-            <Layout>
-              <Toaster position="top-right" />
-            </Layout>
-          }
-        />
-
         <Route
           path="/live-sessions"
           element={
-            <Layout>
-              <LiveSessionManagement />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <LiveSessionManagement />
+              </Layout>
+            </ProtectedRoute>
           }
         />
 
         <Route
           path="/attendance"
           element={
-            <Layout>
-              <AttendancePage />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AttendancePage />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/staff"
           element={
-            <Layout>
-              <DashboardPage />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <DashboardPage />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/staff-departments"
           element={
-            <Layout>
-              <DepartmentPage />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <DepartmentPage />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/staff-attendance"
           element={
-            <Layout>
-              <StaffAttendance />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <StaffAttendance />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/staff-list/:department"
           element={
-            <Layout>
-              <StaffListPage />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <StaffListPage />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/staff-detail/:id"
           element={
-            <Layout>
-              <StaffDetailView />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <StaffDetailView />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/student-list"
           element={
-            <Layout>
-              <StudentList />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <StudentList />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/teacher-list"
           element={
-            <Layout>
-              <TeacherAttendance />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <TeacherAttendance />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/attendance/calendar"
           element={
-            <Layout>
-              <AttendanceCalendar />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AttendanceCalendar />
+              </Layout>
+            </ProtectedRoute>
           }
         />
 
         <Route
           path="/attendance/:classId"
           element={
-            <Layout>
-              <StudentAttendenceList />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <StudentAttendenceList />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/staff-attendance"
           element={
-            <Layout>
-              <StaffAttendance />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <StaffAttendance />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/notices"
           element={
-            <Layout>
-              <Notices />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <Notices />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/result"
           element={
-            <Layout>
-              <StudentResultPage />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <StudentResultPage />
+              </Layout>
+            </ProtectedRoute>
           }
         />
 
         <Route
           path="/fee-reminder"
           element={
-            <Layout>
-              <StudentFeeManagementPage />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <StudentFeeManagementPage />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/add-student-fee"
           element={
-            <Layout>
-              <AddStudentFeeForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AddStudentFeeForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/view-receipt/:id"
           element={
-            <Layout>
-              <ReceiptModal />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <ReceiptModal />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/assesments"
           element={
-            <Layout>
-              <TestManagement />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <TestManagement />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/test-form"
           element={
-            <Layout>
-              <TestForm />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <TestForm />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/submission/all/:testId"
           element={
-            <Layout>
-              <StudentAssessmentResults />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <StudentAssessmentResults />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/assesments/:testId"
           element={
-            <Layout>
-              <AssesmentQuestions />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AssesmentQuestions />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/assesments-result/:submissionId"
           element={
-            <Layout>
-              <AssessmentResult />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AssessmentResult />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/time-table"
           element={
-            <Layout>
-              <TimeTable />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <TimeTable />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/add-class-timetable"
           element={
-            <Layout>
-              <AddClassTimeTable />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AddClassTimeTable />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/edit-timetable/:id"
           element={
-            <Layout>
-              <EditClassTimeTable />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <EditClassTimeTable />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/vehicle-tracking/:id"
           element={
-            <Layout>
-              <VehicleTrackingPage />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <VehicleTrackingPage />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/show-tracking/:id"
           element={
-            <Layout>
-              <ShowVehicleTracking/>
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <ShowVehicleTracking />
+              </Layout>
+            </ProtectedRoute>
           }
         />
       </Routes>

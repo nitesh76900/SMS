@@ -6,157 +6,156 @@ import QuestionForm from "../components/assessment/QuestionForm";
 import QuestionList from "../components/assessment/QuestionList";
 import TestService from "../services/testService";
 
+// const TestDetailsForm = ({ test, onChange, onSubmit, isLoading }) => (
+//   <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+//     <form onSubmit={onSubmit} className="space-y-8 p-8">
+//       {/* Basic Info Section */}
+//       <div className="border-b border-gray-200 pb-8">
+//         <h2 className="text-xl font-semibold text-gray-800 mb-6">
+//           Basic Information
+//         </h2>
+//         <div className="space-y-6">
+//           <div>
+//             <label
+//               htmlFor="title"
+//               className="block text-sm font-medium text-gray-700 mb-1"
+//             >
+//               Test Title
+//             </label>
+//             <input
+//               id="title"
+//               name="title"
+//               type="text"
+//               value={test.title}
+//               onChange={onChange}
+//               placeholder="Enter test title"
+//               maxLength={100}
+//               required
+//               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+//             />
+//           </div>
+//           <div>
+//             <label
+//               htmlFor="description"
+//               className="block text-sm font-medium text-gray-700 mb-1"
+//             >
+//               Description
+//             </label>
+//             <textarea
+//               id="description"
+//               name="description"
+//               value={test.description}
+//               onChange={onChange}
+//               placeholder="Enter test description"
+//               maxLength={500}
+//               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors min-h-[120px]"
+//             />
+//           </div>
+//         </div>
+//       </div>
 
-const TestDetailsForm = ({ test, onChange, onSubmit, isLoading }) => (
-  <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-    <form onSubmit={onSubmit} className="space-y-8 p-8">
-      {/* Basic Info Section */}
-      <div className="border-b border-gray-200 pb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6">
-          Basic Information
-        </h2>
-        <div className="space-y-6">
-          <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Test Title
-            </label>
-            <input
-              id="title"
-              name="title"
-              type="text"
-              value={test.title}
-              onChange={onChange}
-              placeholder="Enter test title"
-              maxLength={100}
-              required
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={test.description}
-              onChange={onChange}
-              placeholder="Enter test description"
-              maxLength={500}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors min-h-[120px]"
-            />
-          </div>
-        </div>
-      </div>
+//       {/* Test Configuration Section */}
+//       <div className="border-b border-gray-200 pb-8">
+//         <h2 className="text-xl font-semibold text-gray-800 mb-6">
+//           Test Configuration
+//         </h2>
+//         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//           <div>
+//             <label
+//               htmlFor="duration"
+//               className="block text-sm font-medium text-gray-700 mb-1"
+//             >
+//               Duration (minutes)
+//             </label>
+//             <input
+//               id="duration"
+//               name="duration"
+//               type="number"
+//               value={test.duration}
+//               onChange={onChange}
+//               min={1}
+//               max={180}
+//               required
+//               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+//             />
+//           </div>
+//           <div>
+//             <label
+//               htmlFor="passingPercentage"
+//               className="block text-sm font-medium text-gray-700 mb-1"
+//             >
+//               Passing Percentage
+//             </label>
+//             <input
+//               id="passingPercentage"
+//               name="passingPercentage"
+//               type="number"
+//               value={test.passingPercentage}
+//               onChange={onChange}
+//               min={0}
+//               max={100}
+//               required
+//               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+//             />
+//           </div>
+//         </div>
+//       </div>
 
-      {/* Test Configuration Section */}
-      <div className="border-b border-gray-200 pb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6">
-          Test Configuration
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label
-              htmlFor="duration"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Duration (minutes)
-            </label>
-            <input
-              id="duration"
-              name="duration"
-              type="number"
-              value={test.duration}
-              onChange={onChange}
-              min={1}
-              max={180}
-              required
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="passingPercentage"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Passing Percentage
-            </label>
-            <input
-              id="passingPercentage"
-              name="passingPercentage"
-              type="number"
-              value={test.passingPercentage}
-              onChange={onChange}
-              min={0}
-              max={100}
-              required
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-            />
-          </div>
-        </div>
-      </div>
+//       {/* Schedule Section */}
+//       <div className="border-b border-gray-200 pb-8">
+//         <h2 className="text-xl font-semibold text-gray-800 mb-6">
+//           Test Schedule
+//         </h2>
+//         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//           <div>
+//             <label
+//               htmlFor="startTime"
+//               className="block text-sm font-medium text-gray-700 mb-1"
+//             >
+//               Start Time
+//             </label>
+//             <input
+//               id="startTime"
+//               name="startTime"
+//               type="datetime-local"
+//               value={test.startTime}
+//               onChange={onChange}
+//               required
+//               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+//             />
+//           </div>
+//           <div>
+//             <label
+//               htmlFor="endTime"
+//               className="block text-sm font-medium text-gray-700 mb-1"
+//             >
+//               End Time
+//             </label>
+//             <input
+//               id="endTime"
+//               name="endTime"
+//               type="datetime-local"
+//               value={test.endTime}
+//               onChange={onChange}
+//               required
+//               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+//             />
+//           </div>
+//         </div>
+//       </div>
 
-      {/* Schedule Section */}
-      <div className="border-b border-gray-200 pb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6">
-          Test Schedule
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label
-              htmlFor="startTime"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Start Time
-            </label>
-            <input
-              id="startTime"
-              name="startTime"
-              type="datetime-local"
-              value={test.startTime}
-              onChange={onChange}
-              required
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="endTime"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              End Time
-            </label>
-            <input
-              id="endTime"
-              name="endTime"
-              type="datetime-local"
-              value={test.endTime}
-              onChange={onChange}
-              required
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="inline-flex justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
-        >
-          {isLoading ? "Saving..." : "Save Test Details"}
-        </button>
-      </div>
-    </form>
-  </div>
-);
+//       <div className="flex items-center justify-between">
+//         <button
+//           type="submit"
+//           disabled={isLoading}
+//           className="inline-flex justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
+//         >
+//           {isLoading ? "Saving..." : "Save Test Details"}
+//         </button>
+//       </div>
+//     </form>
+//   </div>
+// );
 
 const TestForm = () => {
   const navigate = useNavigate();
@@ -259,7 +258,7 @@ const TestForm = () => {
 
       await TestService.createTest(finalTestData);
       showToast("Test created successfully!", "success");
-      navigate("/assessments");
+      navigate("/assesments");
     } catch (err) {
       setError(err.message || "Failed to create test");
       showToast(err.message || "Failed to create test", "error");
@@ -355,7 +354,9 @@ const TestForm = () => {
                     setIsAddingQuestion(false);
                     setEditingIndex(null);
                   }}
-                  initialData={editingIndex !== null ? questions[editingIndex] : null}
+                  initialData={
+                    editingIndex !== null ? questions[editingIndex] : null
+                  }
                 />
               )}
             </div>

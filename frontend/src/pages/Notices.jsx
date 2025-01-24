@@ -75,7 +75,9 @@ const Notices = () => {
       setFormData({
         title: notice.title,
         description: notice.description,
-        date: notice.date,
+        date: new Date(notice.date).toISOString().slice(0, 10), // yyyy-MM-dd format
+        subject: notice.subject,
+        for: notice.for,
       });
     } else {
       setIsEditing(false);
@@ -209,7 +211,12 @@ const Notices = () => {
                         <span className="px-2 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-medium">
                           Notice
                         </span>
-                        <span className="flex items-center">{notice.date}</span>
+                        <span className="flex items-center">
+                          {new Date(notice.date)
+                            .toISOString()
+                            .slice(0, 10)
+                            .replace(/-/g, "/")}
+                        </span>
                       </div>
                       <Typography
                         variant="h6"
@@ -230,6 +237,13 @@ const Notices = () => {
                       className="text-gray-600 leading-relaxed line-clamp-3"
                     >
                       {notice.description}
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      className="text-gray-600 leading-relaxed line-clamp-3"
+                    >
+                      For-{notice.for}
                     </Typography>
                   </div>
 
@@ -299,7 +313,7 @@ const Notices = () => {
             fullWidth
             margin="normal"
             type="date"
-            value={formData.date}
+            value={formData.date} // Ensure this is in yyyy-MM-dd format
             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
             InputLabelProps={{ shrink: true }}
             error={error && !formData.date}
@@ -319,13 +333,20 @@ const Notices = () => {
 
           {/* Audience (For) */}
           <TextField
-            label="For (Audience)"
+            select
             fullWidth
             margin="normal"
-            value={formData.foruse}
+            value={formData.for}
             onChange={(e) => setFormData({ ...formData, for: e.target.value })}
             error={error && !formData.for}
-          />
+            SelectProps={{ native: true }}
+          >
+            <option value="">Select Audience</option>
+            <option value="students">Students</option>
+            <option value="teachers">Teachers</option>
+            <option value="parents">Parents</option>
+            <option value="all">All</option>
+          </TextField>
 
           {/* Error message */}
           {error && (

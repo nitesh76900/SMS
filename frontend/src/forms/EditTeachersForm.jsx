@@ -35,6 +35,7 @@ const AddTeachersForm = () => {
   const fetchTeacherData = async () => {
     try {
       const response = await teacherService.getTeacherById(id);
+      console.log("response", response);
       const teacherData = response.data;
       // Transform the incoming data to match form structure
       setFormData({
@@ -46,9 +47,9 @@ const AddTeachersForm = () => {
           name: cls.name,
           section: cls.section,
         })),
-        leadClass: teacherData.leadClass._id,
+        leadClass: teacherData.leadClass?._id || "",
         role: teacherData.role,
-        staffId:teacherData.staffId._id,
+        staffId: teacherData.staffId._id,
         salary: teacherData.staffId.salary,
       });
     } catch (error) {
@@ -269,20 +270,22 @@ const AddTeachersForm = () => {
             </div>
           </div>
           <div>
-                <label className="block text-sm font-medium mb-1">
-                  teacher salary
-                </label>
-                <input
-                  type="text"
-                  name="salary"
-                  value={formData.salary}
-                  className="w-full p-2 border rounded bg-gray-100"
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev, 
-                    salary: e.target.value
-                  }))}
-                />
-              </div>
+            <label className="block text-sm font-medium mb-1">
+              teacher salary
+            </label>
+            <input
+              type="text"
+              name="salary"
+              value={formData.salary}
+              className="w-full p-2 border rounded bg-gray-100"
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  salary: e.target.value,
+                }))
+              }
+            />
+          </div>
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors font-semibold"
