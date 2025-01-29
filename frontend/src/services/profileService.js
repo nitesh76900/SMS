@@ -6,7 +6,7 @@ const ProfileService = {
   async getProfile() {
     console.log('get profile called')
     try {
-      const response = await api.get("/profile");
+      const response = await api.get("/profile/");
       console.log('response in get profile', response)
       console.log(response)
       return response.data;

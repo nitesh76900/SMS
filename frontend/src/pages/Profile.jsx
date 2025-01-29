@@ -22,7 +22,7 @@ const Profile = () => {
   const fetchProfile = async () => {
     try {
       const response = await ProfileService.getProfile();
-      console.log("response", response.user);
+      console.log("response", response);
       if (response.user) {
         setProfileData(response.user);
       }
