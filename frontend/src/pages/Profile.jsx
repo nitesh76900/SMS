@@ -7,10 +7,13 @@ import {
   Grid,
   CircularProgress,
   Box,
+  Button,
 } from "@mui/material";
 import ProfileService from "../services/profileService";
+import UpdatePassword from "../forms/UpdatePassword";
 
 const Profile = () => {
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -151,7 +154,10 @@ const Profile = () => {
                   <InfoField label="Batch" value={displayData.batch} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <InfoField label="Class" value={`${displayData.className} - ${displayData.classSec}`} />
+                  <InfoField
+                    label="Class"
+                    value={`${displayData.className} - ${displayData.classSec}`}
+                  />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <InfoField
@@ -203,8 +209,23 @@ const Profile = () => {
               </>
             )}
           </Grid>
+          <Box mt={3} display="flex" justifyContent="flex-end">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setIsPasswordDialogOpen(true)}
+              sx={{ mt: 2 }}
+            >
+              Update Password
+            </Button>
+          </Box>
         </CardContent>
       </Card>
+
+      <UpdatePassword
+        open={isPasswordDialogOpen}
+        onClose={() => setIsPasswordDialogOpen(false)}
+      />
     </Box>
   );
 };
